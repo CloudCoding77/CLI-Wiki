@@ -1,4 +1,4 @@
-import React from 'react'
+import { useState } from 'react'
 import type { Command, OS } from '../types'
 import { commands } from '../data/commands'
 
@@ -21,7 +21,7 @@ const osBadgeColors: Record<string, string> = {
 }
 
 function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = React.useState(false)
+  const [copied, setCopied] = useState(false)
 
   const copy = async () => {
     await navigator.clipboard.writeText(text)
