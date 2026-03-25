@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/cli-wiki/',
+  base: '/CLI-Wiki/',
   plugins: [
     react(),
     VitePWA({
@@ -16,8 +16,8 @@ export default defineConfig({
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',
-        start_url: '/cli-wiki/',
-        scope: '/cli-wiki/',
+        start_url: '/CLI-Wiki/',
+        scope: '/CLI-Wiki/',
         icons: [
           {
             src: 'icons/icon-192x192.png',
