@@ -82,5 +82,29 @@
     "name": "Containers",
     "icon": "🐳",
     "description": "Docker and container management commands"
+  },
+  {
+    "id": "scripting",
+    "name": "Scripting",
+    "icon": "📜",
+    "description": "Shell scripting constructs, variables, loops, and conditions"
+  },
+  {
+    "id": "developer-tools",
+    "name": "Developer Tools",
+    "icon": "🛠️",
+    "description": "Build tools, language runtimes, debuggers, and development utilities"
+  },
+  {
+    "id": "security",
+    "name": "Security",
+    "icon": "🔒",
+    "description": "Cryptography, hashing, certificate management, and security auditing"
+  },
+  {
+    "id": "editors",
+    "name": "Editors",
+    "icon": "✏️",
+    "description": "Terminal-based text editors and their essential shortcuts"
   }
 ]
