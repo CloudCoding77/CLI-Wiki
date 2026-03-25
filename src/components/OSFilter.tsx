@@ -1,10 +1,11 @@
 import type { OS } from '../types'
+import { useLanguage } from '../i18n/LanguageContext'
 
-const options: { value: OS | 'all'; label: string }[] = [
-  { value: 'all', label: 'All' },
-  { value: 'linux', label: 'Linux' },
-  { value: 'macos', label: 'macOS' },
-  { value: 'windows', label: 'Windows' },
+const options: { value: OS | 'all'; labelKey: string | null }[] = [
+  { value: 'all', labelKey: null },
+  { value: 'linux', labelKey: 'Linux' },
+  { value: 'macos', labelKey: 'macOS' },
+  { value: 'windows', labelKey: 'Windows' },
 ]
 
 interface Props {
@@ -13,6 +14,8 @@ interface Props {
 }
 
 export default function OSFilter({ selected, onChange }: Props) {
+  const { t } = useLanguage()
+
   return (
     <div className="flex gap-2 flex-wrap">
       {options.map((opt) => (
@@ -25,7 +28,7 @@ export default function OSFilter({ selected, onChange }: Props) {
               : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
           }`}
         >
-          {opt.label}
+          {opt.labelKey ?? t('filter.all')}
         </button>
       ))}
     </div>

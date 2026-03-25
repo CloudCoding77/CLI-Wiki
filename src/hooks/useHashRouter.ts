@@ -1,14 +1,23 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { OS } from '../types'
+import type { Lang } from '../i18n/ui'
 
 interface HashState {
   commandId: string | null
   os: OS | 'all'
   cat: string | null
   q: string
+  lang: Lang
 }
 
 const VALID_OS: ReadonlySet<string> = new Set(['linux', 'macos', 'windows', 'all'])
+const VALID_LANG: ReadonlySet<string> = new Set(['en', 'de'])
+
+function getInitialLang(): Lang {
+  const stored = localStorage.getItem('lang')
+  if (stored && VALID_LANG.has(stored)) return stored as Lang
+  return 'en'
+}
 
 function parseHash(hash: string): HashState {
   // Remove leading "#" if present
@@ -33,7 +42,10 @@ function parseHash(hash: string): HashState {
   const cat = params.get('cat') || null
   const q = params.get('q') ?? ''
 
-  return { commandId, os, cat, q }
+  const langParam = params.get('lang') ?? ''
+  const lang: Lang = VALID_LANG.has(langParam) ? (langParam as Lang) : getInitialLang()
+
+  return { commandId, os, cat, q, lang }
 }
 
 function buildHash(state: HashState): string {
@@ -46,6 +58,7 @@ function buildHash(state: HashState): string {
   if (state.os && state.os !== 'all') params.set('os', state.os)
   if (state.cat) params.set('cat', state.cat)
   if (state.q) params.set('q', state.q)
+  if (state.lang && state.lang !== 'en') params.set('lang', state.lang)
 
   const qs = params.toString()
   return qs ? `${path}?${qs}` : path
@@ -58,12 +71,13 @@ export function useHashRouter() {
   const [selectedOS, setSelectedOSState] = useState<OS | 'all'>(initial.os)
   const [selectedCategory, setSelectedCategoryState] = useState<string | null>(initial.cat)
   const [selectedCommandId, setSelectedCommandIdState] = useState<string | null>(initial.commandId)
+  const [lang, setLangState] = useState<Lang>(initial.lang)
 
   const isFromHashChange = useRef(false)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Keep a ref of current state for building hash without stale closures
-  const stateRef = useRef<HashState>({ commandId: initial.commandId, os: initial.os, cat: initial.cat, q: initial.q })
+  const stateRef = useRef<HashState>({ commandId: initial.commandId, os: initial.os, cat: initial.cat, q: initial.q, lang: initial.lang })
 
   const updateHash = useCallback((newState: Partial<HashState>, push: boolean) => {
     stateRef.current = { ...stateRef.current, ...newState }
@@ -98,6 +112,15 @@ export function useHashRouter() {
     }
   }, [updateHash])
 
+  // Language → replaceState + localStorage
+  const setLang = useCallback((l: Lang) => {
+    setLangState(l)
+    localStorage.setItem('lang', l)
+    if (!isFromHashChange.current) {
+      updateHash({ lang: l }, false)
+    }
+  }, [updateHash])
+
   // Search → replaceState with debounce
   const setSearch = useCallback((q: string) => {
     setSearchState(q)
@@ -118,6 +141,7 @@ export function useHashRouter() {
       setSelectedOSState(parsed.os)
       setSelectedCategoryState(parsed.cat)
       setSelectedCommandIdState(parsed.commandId)
+      setLangState(parsed.lang)
       stateRef.current = parsed
       // Reset flag after React processes the state updates
       setTimeout(() => { isFromHashChange.current = false }, 0)
@@ -143,5 +167,7 @@ export function useHashRouter() {
     setSelectedCategory,
     selectedCommandId,
     setSelectedCommandId,
+    lang,
+    setLang,
   }
 }

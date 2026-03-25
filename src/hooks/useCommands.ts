@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react'
-import { commands } from '../data/commands'
 import { useHashRouter } from './useHashRouter'
+import { getLocalizedCommands } from '../i18n/localizedData'
 import type { Command } from '../types'
 
 function commandMatchesSearch(cmd: Command, query: string): boolean {
@@ -27,12 +27,16 @@ export function useCommands() {
     setSelectedCategory,
     selectedCommandId,
     setSelectedCommandId,
+    lang,
+    setLang,
   } = useHashRouter()
+
+  const commands = useMemo(() => getLocalizedCommands(lang), [lang])
 
   // Resolve commandId → Command object
   const selectedCommand = useMemo(
     () => (selectedCommandId ? commands.find((c) => c.id === selectedCommandId) ?? null : null),
-    [selectedCommandId]
+    [selectedCommandId, commands]
   )
 
   // Wrapper: accepts Command | null, stores only ID
@@ -49,7 +53,7 @@ export function useCommands() {
       if (matchesOS && commandMatchesSearch(cmd, search)) cats.add(cmd.category)
     }
     return Array.from(cats)
-  }, [search, selectedOS])
+  }, [commands, search, selectedOS])
 
   const filtered = useMemo(() => {
     return commands.filter((cmd) => {
@@ -57,7 +61,7 @@ export function useCommands() {
       const matchesCategory = !selectedCategory || cmd.category === selectedCategory
       return matchesOS && matchesCategory && commandMatchesSearch(cmd, search)
     })
-  }, [search, selectedOS, selectedCategory])
+  }, [commands, search, selectedOS, selectedCategory])
 
   // Reset selected category when it becomes unavailable
   if (selectedCategory && !availableCategories.includes(selectedCategory)) {
@@ -75,5 +79,7 @@ export function useCommands() {
     setSelectedCommand,
     filtered,
     availableCategories,
+    lang,
+    setLang,
   }
 }

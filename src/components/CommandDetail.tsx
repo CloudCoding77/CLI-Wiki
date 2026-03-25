@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Command, OS } from '../types'
 import { commands } from '../data/commands'
+import { useLanguage } from '../i18n/LanguageContext'
 
 interface Props {
   command: Command
@@ -22,6 +23,7 @@ const osBadgeColors: Record<string, string> = {
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
+  const { t } = useLanguage()
 
   const copy = async () => {
     await navigator.clipboard.writeText(text)
@@ -33,14 +35,16 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={copy}
       className="text-xs text-slate-400 hover:text-emerald-400 transition-colors shrink-0"
-      title="Copy to clipboard"
+      title={t('detail.copyToClipboard')}
     >
-      {copied ? 'Copied!' : 'Copy'}
+      {copied ? t('detail.copied') : t('detail.copy')}
     </button>
   )
 }
 
 export default function CommandDetail({ command, onClose, onNavigate }: Props) {
+  const { t } = useLanguage()
+
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
@@ -76,7 +80,7 @@ export default function CommandDetail({ command, onClose, onNavigate }: Props) {
           {/* Syntax */}
           <div>
             <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Syntax
+              {t('detail.syntax')}
             </h3>
             <div className="space-y-2">
               {(Object.entries(command.syntax) as [OS, string][]).map(([os, syn]) => (
@@ -94,7 +98,7 @@ export default function CommandDetail({ command, onClose, onNavigate }: Props) {
           {/* Examples */}
           <div>
             <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Examples
+              {t('detail.examples')}
             </h3>
             <div className="space-y-3">
               {command.examples.map((ex, i) => (
@@ -114,7 +118,7 @@ export default function CommandDetail({ command, onClose, onNavigate }: Props) {
           {/* Tips */}
           {command.tips && (
             <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
-              <h3 className="text-sm font-semibold text-emerald-400 mb-1">Tip</h3>
+              <h3 className="text-sm font-semibold text-emerald-400 mb-1">{t('detail.tip')}</h3>
               <p className="text-sm text-slate-300">{command.tips}</p>
             </div>
           )}
@@ -123,7 +127,7 @@ export default function CommandDetail({ command, onClose, onNavigate }: Props) {
           {command.relatedCommands && command.relatedCommands.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                Related Commands
+                {t('detail.relatedCommands')}
               </h3>
               <div className="flex gap-2 flex-wrap">
                 {command.relatedCommands.map((id) => {

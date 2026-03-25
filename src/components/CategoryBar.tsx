@@ -1,12 +1,15 @@
-import categories from '../data/categories.json'
+import { useLanguage } from '../i18n/LanguageContext'
+import type { Category } from '../types'
 
 interface Props {
   selected: string | null
   onChange: (id: string | null) => void
   availableCategories: string[]
+  categories: Category[]
 }
 
-export default function CategoryBar({ selected, onChange, availableCategories }: Props) {
+export default function CategoryBar({ selected, onChange, availableCategories, categories }: Props) {
+  const { t } = useLanguage()
   const visibleCategories = categories.filter((cat) => availableCategories.includes(cat.id))
 
   return (
@@ -19,7 +22,7 @@ export default function CategoryBar({ selected, onChange, availableCategories }:
             : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
         }`}
       >
-        All
+        {t('filter.all')}
       </button>
       {visibleCategories.map((cat) => (
         <button

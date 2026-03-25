@@ -1,0 +1,41 @@
+export type Lang = 'en' | 'de'
+
+const ui = {
+  en: {
+    'header.commands': 'commands',
+    'search.placeholder': 'Search commands...',
+    'search.ariaLabel': 'Search commands',
+    'search.clear': 'Clear search',
+    'filter.all': 'All',
+    'empty.title': 'No commands found.',
+    'empty.subtitle': 'Try adjusting your filters or search term.',
+    'footer.text': 'CLI Wiki — Command Reference for Windows, macOS & Linux',
+    'detail.syntax': 'Syntax',
+    'detail.examples': 'Examples',
+    'detail.tip': 'Tip',
+    'detail.relatedCommands': 'Related Commands',
+    'detail.copy': 'Copy',
+    'detail.copied': 'Copied!',
+    'detail.copyToClipboard': 'Copy to clipboard',
+  },
+  de: {
+    'header.commands': 'Befehle',
+    'search.placeholder': 'Befehle suchen...',
+    'search.ariaLabel': 'Befehle suchen',
+    'search.clear': 'Suche leeren',
+    'filter.all': 'Alle',
+    'empty.title': 'Keine Befehle gefunden.',
+    'empty.subtitle': 'Passe die Filter oder den Suchbegriff an.',
+    'footer.text': 'CLI Wiki — Befehlsreferenz für Windows, macOS & Linux',
+    'detail.syntax': 'Syntax',
+    'detail.examples': 'Beispiele',
+    'detail.tip': 'Tipp',
+    'detail.relatedCommands': 'Verwandte Befehle',
+    'detail.copy': 'Kopieren',
+    'detail.copied': 'Kopiert!',
+    'detail.copyToClipboard': 'In die Zwischenablage kopieren',
+  },
+} as const satisfies Record<Lang, Record<string, string>>
+
+export type UIKey = keyof (typeof ui)['en']
+export default ui
