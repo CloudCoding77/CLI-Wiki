@@ -3,9 +3,12 @@ import categories from '../data/categories.json'
 interface Props {
   selected: string | null
   onChange: (id: string | null) => void
+  availableCategories: string[]
 }
 
-export default function CategoryBar({ selected, onChange }: Props) {
+export default function CategoryBar({ selected, onChange, availableCategories }: Props) {
+  const visibleCategories = categories.filter((cat) => availableCategories.includes(cat.id))
+
   return (
     <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
       <button
@@ -18,7 +21,7 @@ export default function CategoryBar({ selected, onChange }: Props) {
       >
         All
       </button>
-      {categories.map((cat) => (
+      {visibleCategories.map((cat) => (
         <button
           key={cat.id}
           onClick={() => onChange(selected === cat.id ? null : cat.id)}

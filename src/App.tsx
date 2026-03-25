@@ -17,6 +17,7 @@ export default function App() {
     selectedCommand,
     setSelectedCommand,
     filtered,
+    availableCategories,
   } = useCommands()
 
   // Group filtered commands by category
@@ -43,7 +44,7 @@ export default function App() {
           <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
             <OSFilter selected={selectedOS} onChange={setSelectedOS} />
           </div>
-          <CategoryBar selected={selectedCategory} onChange={setSelectedCategory} />
+          <CategoryBar selected={selectedCategory} onChange={setSelectedCategory} availableCategories={availableCategories} />
         </div>
       </header>
 
