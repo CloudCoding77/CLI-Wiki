@@ -1,0 +1,50 @@
+[
+  {
+    "id": "file-management",
+    "name": "File Management",
+    "icon": "📁",
+    "description": "Create, copy, move, and delete files and directories"
+  },
+  {
+    "id": "networking",
+    "name": "Networking",
+    "icon": "🌐",
+    "description": "Network diagnostics, transfers, and configuration"
+  },
+  {
+    "id": "system-info",
+    "name": "System Info",
+    "icon": "💻",
+    "description": "System details, hardware, and environment information"
+  },
+  {
+    "id": "process-management",
+    "name": "Process Management",
+    "icon": "⚙️",
+    "description": "View, manage, and control running processes"
+  },
+  {
+    "id": "text-processing",
+    "name": "Text Processing",
+    "icon": "📝",
+    "description": "Search, filter, transform, and analyze text"
+  },
+  {
+    "id": "package-management",
+    "name": "Package Management",
+    "icon": "📦",
+    "description": "Install, update, and manage software packages"
+  },
+  {
+    "id": "compression",
+    "name": "Compression",
+    "icon": "🗜️",
+    "description": "Compress and extract archives"
+  },
+  {
+    "id": "permissions-users",
+    "name": "Permissions & Users",
+    "icon": "🔐",
+    "description": "Manage file permissions, users, and access control"
+  }
+]
