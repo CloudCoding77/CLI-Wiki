@@ -11,6 +11,13 @@ export interface CommandFlag {
   os?: OS[]
 }
 
+export interface CommandExplanation {
+  useCases: string[]
+  internals?: string
+  mistakes?: string[]
+  bestPractices?: string[]
+}
+
 export interface Command {
   id: string
   name: string
@@ -22,6 +29,7 @@ export interface Command {
   tips?: string
   relatedCommands?: string[]
   flags?: CommandFlag[]
+  explanation?: CommandExplanation
 }
 
 export interface Category {

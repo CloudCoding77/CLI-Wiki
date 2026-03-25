@@ -3,6 +3,7 @@ import { commands } from '../data/commands'
 import { useLanguage } from '../i18n/LanguageContext'
 import CopyButton from './CopyButton'
 import FlagsExplorer from './FlagsExplorer'
+import ExplanationSection from './ExplanationSection'
 
 interface Props {
   command: Command
@@ -79,6 +80,11 @@ export default function CommandDetail({ command, onClose, onNavigate, selectedOS
           {/* Flags & Options */}
           {command.flags && command.flags.length > 0 && (
             <FlagsExplorer flags={command.flags} commandOs={command.os} selectedOS={selectedOS} />
+          )}
+
+          {/* Deep Dive / Explanation */}
+          {command.explanation && (
+            <ExplanationSection explanation={command.explanation} />
           )}
 
           {/* Examples */}

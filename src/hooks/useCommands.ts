@@ -16,7 +16,11 @@ function commandMatchesSearch(cmd: Command, query: string): boolean {
     ) ||
     (cmd.flags?.some(
       (f) => f.flag.toLowerCase().includes(q) || f.description.toLowerCase().includes(q)
-    ) ?? false)
+    ) ?? false) ||
+    (cmd.explanation?.useCases.some((u) => u.toLowerCase().includes(q)) ?? false) ||
+    (cmd.explanation?.internals?.toLowerCase().includes(q) ?? false) ||
+    (cmd.explanation?.mistakes?.some((m) => m.toLowerCase().includes(q)) ?? false) ||
+    (cmd.explanation?.bestPractices?.some((b) => b.toLowerCase().includes(q)) ?? false)
   )
 }
 

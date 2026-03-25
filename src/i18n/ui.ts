@@ -20,6 +20,11 @@ const ui = {
     'detail.flags': 'Flags & Options',
     'detail.flagsShowAll': 'Show all',
     'detail.flagsCollapse': 'Show less',
+    'detail.explanation': 'Deep Dive',
+    'detail.useCases': 'When to use',
+    'detail.internals': 'How it works',
+    'detail.mistakes': 'Common mistakes',
+    'detail.bestPractices': 'Best practices',
   },
   de: {
     'header.commands': 'Befehle',
@@ -40,6 +45,11 @@ const ui = {
     'detail.flags': 'Flags & Optionen',
     'detail.flagsShowAll': 'Alle anzeigen',
     'detail.flagsCollapse': 'Weniger anzeigen',
+    'detail.explanation': 'Hintergrund',
+    'detail.useCases': 'Wann verwenden',
+    'detail.internals': 'Wie es funktioniert',
+    'detail.mistakes': 'Häufige Fehler',
+    'detail.bestPractices': 'Best Practices',
   },
 } as const satisfies Record<Lang, Record<string, string>>
 
