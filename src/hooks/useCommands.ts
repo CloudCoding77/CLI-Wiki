@@ -1,12 +1,31 @@
-import { useState, useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { commands } from '../data/commands'
-import type { OS, Command } from '../types'
+import { useHashRouter } from './useHashRouter'
+import type { Command } from '../types'
 
 export function useCommands() {
-  const [search, setSearch] = useState('')
-  const [selectedOS, setSelectedOS] = useState<OS | 'all'>('all')
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [selectedCommand, setSelectedCommand] = useState<Command | null>(null)
+  const {
+    search,
+    setSearch,
+    selectedOS,
+    setSelectedOS,
+    selectedCategory,
+    setSelectedCategory,
+    selectedCommandId,
+    setSelectedCommandId,
+  } = useHashRouter()
+
+  // Resolve commandId → Command object
+  const selectedCommand = useMemo(
+    () => (selectedCommandId ? commands.find((c) => c.id === selectedCommandId) ?? null : null),
+    [selectedCommandId]
+  )
+
+  // Wrapper: accepts Command | null, stores only ID
+  const setSelectedCommand = useCallback(
+    (cmd: Command | null) => setSelectedCommandId(cmd?.id ?? null),
+    [setSelectedCommandId]
+  )
 
   // Category IDs that have at least one command matching OS + search (ignoring category filter)
   const availableCategories = useMemo(() => {
