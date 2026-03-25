@@ -1,9 +1,30 @@
+import { useEffect, useRef } from 'react'
+
 interface Props {
   value: string
   onChange: (v: string) => void
 }
 
 export default function SearchBar({ value, onChange }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      // Cmd+K or Ctrl+K → focus search
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        inputRef.current?.focus()
+      }
+      // Esc → clear and blur search
+      if (e.key === 'Escape' && document.activeElement === inputRef.current) {
+        onChange('')
+        inputRef.current?.blur()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onChange])
+
   return (
     <div className="relative">
       <svg
@@ -20,22 +41,30 @@ export default function SearchBar({ value, onChange }: Props) {
         />
       </svg>
       <input
-        type="text"
+        ref={inputRef}
+        type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search commands..."
-        className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl
+        aria-label="Search commands"
+        className="w-full pl-10 pr-20 py-3 bg-slate-800 border border-slate-700 rounded-xl
                    text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2
                    focus:ring-emerald-500 focus:border-transparent transition-all"
       />
-      {value && (
-        <button
-          onClick={() => onChange('')}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
-        >
-          &times;
-        </button>
-      )}
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+        {value && (
+          <button
+            onClick={() => onChange('')}
+            className="text-slate-400 hover:text-slate-200"
+            aria-label="Clear search"
+          >
+            &times;
+          </button>
+        )}
+        <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] text-slate-500 bg-slate-700/50 border border-slate-600/50 rounded">
+          <span className="text-[11px]">&#8984;</span>K
+        </kbd>
+      </div>
     </div>
   )
 }

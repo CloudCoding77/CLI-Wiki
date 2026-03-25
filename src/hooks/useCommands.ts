@@ -3,6 +3,20 @@ import { commands } from '../data/commands'
 import { useHashRouter } from './useHashRouter'
 import type { Command } from '../types'
 
+function commandMatchesSearch(cmd: Command, query: string): boolean {
+  if (!query) return true
+  const q = query.toLowerCase()
+  return (
+    cmd.name.toLowerCase().includes(q) ||
+    cmd.description.toLowerCase().includes(q) ||
+    cmd.id.toLowerCase().includes(q) ||
+    (cmd.tips != null && cmd.tips.toLowerCase().includes(q)) ||
+    cmd.examples.some(
+      (ex) => ex.description.toLowerCase().includes(q) || ex.code.toLowerCase().includes(q)
+    )
+  )
+}
+
 export function useCommands() {
   const {
     search,
@@ -32,12 +46,7 @@ export function useCommands() {
     const cats = new Set<string>()
     for (const cmd of commands) {
       const matchesOS = selectedOS === 'all' || cmd.os.includes(selectedOS)
-      const matchesSearch =
-        !search ||
-        cmd.name.toLowerCase().includes(search.toLowerCase()) ||
-        cmd.description.toLowerCase().includes(search.toLowerCase()) ||
-        cmd.id.toLowerCase().includes(search.toLowerCase())
-      if (matchesOS && matchesSearch) cats.add(cmd.category)
+      if (matchesOS && commandMatchesSearch(cmd, search)) cats.add(cmd.category)
     }
     return Array.from(cats)
   }, [search, selectedOS])
@@ -46,12 +55,7 @@ export function useCommands() {
     return commands.filter((cmd) => {
       const matchesOS = selectedOS === 'all' || cmd.os.includes(selectedOS)
       const matchesCategory = !selectedCategory || cmd.category === selectedCategory
-      const matchesSearch =
-        !search ||
-        cmd.name.toLowerCase().includes(search.toLowerCase()) ||
-        cmd.description.toLowerCase().includes(search.toLowerCase()) ||
-        cmd.id.toLowerCase().includes(search.toLowerCase())
-      return matchesOS && matchesCategory && matchesSearch
+      return matchesOS && matchesCategory && commandMatchesSearch(cmd, search)
     })
   }, [search, selectedOS, selectedCategory])
 
