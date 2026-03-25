@@ -46,5 +46,107 @@
     "name": "Permissions & Users",
     "icon": "🔐",
     "description": "Manage file permissions, users, and access control"
+  },
+  {
+    "id": "disk-storage",
+    "name": "Disk & Storage",
+    "icon": "💾",
+    "description": "Disk partitions, filesystems, and storage management"
+  },
+  {
+    "id": "system-monitoring",
+    "name": "System Monitoring",
+    "icon": "📊",
+    "description": "Monitor system performance, processes, and resources"
+  },
+  {
+    "id": "shell-utilities",
+    "name": "Shell Utilities",
+    "icon": "🐚",
+    "description": "Shell builtins, scripting helpers, and everyday utilities"
+  },
+  {
+    "id": "file-inspection",
+    "name": "File Inspection",
+    "icon": "🔍",
+    "description": "Inspect file types, checksums, metadata, and binary content"
+  },
+  {
+    "id": "version-control",
+    "name": "Version Control",
+    "icon": "🔀",
+    "description": "Git and other version control system commands"
+  },
+  {
+    "id": "containers",
+    "name": "Containers",
+    "icon": "🐳",
+    "description": "Docker and container management commands"
+  },
+  {
+    "id": "logging",
+    "name": "Logging & Journals",
+    "icon": "📋",
+    "description": "System logs, journal queries, and log management"
+  },
+  {
+    "id": "services",
+    "name": "Services & Init",
+    "icon": "🔧",
+    "description": "Manage system services, daemons, and startup processes"
+  },
+  {
+    "id": "security",
+    "name": "Security & Encryption",
+    "icon": "🛡️",
+    "description": "Encryption, SSH key management, and security tools"
+  },
+  {
+    "id": "scheduling",
+    "name": "Scheduling & Jobs",
+    "icon": "⏰",
+    "description": "Schedule tasks, run jobs at specific times"
+  },
+  {
+    "id": "hardware",
+    "name": "Hardware & Devices",
+    "icon": "🖥️",
+    "description": "Inspect hardware, devices, and kernel modules"
+  },
+  {
+    "id": "database",
+    "name": "Database Clients",
+    "icon": "🗄️",
+    "description": "Command-line clients for popular databases"
+  },
+  {
+    "id": "build-tools",
+    "name": "Build & Development",
+    "icon": "🏗️",
+    "description": "Compilers, build systems, and development utilities"
+  },
+  {
+    "id": "data-formats",
+    "name": "Data & Formats",
+    "icon": "🔣",
+    "description": "Parse, transform, and process structured data formats"
+  },
+  {
+    "id": "editors",
+    "name": "Terminal Editors",
+    "icon": "✏️",
+    "description": "Command-line text editors"
+  },
+  {
+    "id": "kubernetes",
+    "name": "Kubernetes",
+    "icon": "☸️",
+    "description": "Kubernetes cluster and workload management"
+  },
+  {
+    "id": "cloud",
+    "name": "Cloud CLIs",
+    "icon": "☁️",
+    "description": "AWS, GCP, Azure, and other cloud provider CLIs"
   }
 ]
