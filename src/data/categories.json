@@ -46,5 +46,41 @@
     "name": "Permissions & Users",
     "icon": "🔐",
     "description": "Manage file permissions, users, and access control"
+  },
+  {
+    "id": "disk-storage",
+    "name": "Disk & Storage",
+    "icon": "💾",
+    "description": "Disk partitions, filesystems, and storage management"
+  },
+  {
+    "id": "system-monitoring",
+    "name": "System Monitoring",
+    "icon": "📊",
+    "description": "Monitor system performance, processes, and resources"
+  },
+  {
+    "id": "shell-utilities",
+    "name": "Shell Utilities",
+    "icon": "🐚",
+    "description": "Shell builtins, scripting helpers, and everyday utilities"
+  },
+  {
+    "id": "file-inspection",
+    "name": "File Inspection",
+    "icon": "🔍",
+    "description": "Inspect file types, checksums, metadata, and binary content"
+  },
+  {
+    "id": "version-control",
+    "name": "Version Control",
+    "icon": "🔀",
+    "description": "Git and other version control system commands"
+  },
+  {
+    "id": "containers",
+    "name": "Containers",
+    "icon": "🐳",
+    "description": "Docker and container management commands"
   }
 ]
