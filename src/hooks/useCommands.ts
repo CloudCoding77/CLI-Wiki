@@ -13,7 +13,10 @@ function commandMatchesSearch(cmd: Command, query: string): boolean {
     (cmd.tips != null && cmd.tips.toLowerCase().includes(q)) ||
     cmd.examples.some(
       (ex) => ex.description.toLowerCase().includes(q) || ex.code.toLowerCase().includes(q)
-    )
+    ) ||
+    (cmd.flags?.some(
+      (f) => f.flag.toLowerCase().includes(q) || f.description.toLowerCase().includes(q)
+    ) ?? false)
   )
 }
 

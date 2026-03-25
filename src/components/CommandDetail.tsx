@@ -1,12 +1,14 @@
-import { useState } from 'react'
 import type { Command, OS } from '../types'
 import { commands } from '../data/commands'
 import { useLanguage } from '../i18n/LanguageContext'
+import CopyButton from './CopyButton'
+import FlagsExplorer from './FlagsExplorer'
 
 interface Props {
   command: Command
   onClose: () => void
   onNavigate: (cmd: Command) => void
+  selectedOS: OS | null
 }
 
 const osLabels: Record<OS, string> = {
@@ -21,28 +23,7 @@ const osBadgeColors: Record<string, string> = {
   windows: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
 }
 
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
-  const { t } = useLanguage()
-
-  const copy = async () => {
-    await navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
-  }
-
-  return (
-    <button
-      onClick={copy}
-      className="text-xs text-slate-400 hover:text-emerald-400 transition-colors shrink-0"
-      title={t('detail.copyToClipboard')}
-    >
-      {copied ? t('detail.copied') : t('detail.copy')}
-    </button>
-  )
-}
-
-export default function CommandDetail({ command, onClose, onNavigate }: Props) {
+export default function CommandDetail({ command, onClose, onNavigate, selectedOS }: Props) {
   const { t } = useLanguage()
 
   return (
@@ -94,6 +75,11 @@ export default function CommandDetail({ command, onClose, onNavigate }: Props) {
               ))}
             </div>
           </div>
+
+          {/* Flags & Options */}
+          {command.flags && command.flags.length > 0 && (
+            <FlagsExplorer flags={command.flags} commandOs={command.os} selectedOS={selectedOS} />
+          )}
 
           {/* Examples */}
           <div>

@@ -17,6 +17,9 @@ const ui = {
     'detail.copy': 'Copy',
     'detail.copied': 'Copied!',
     'detail.copyToClipboard': 'Copy to clipboard',
+    'detail.flags': 'Flags & Options',
+    'detail.flagsShowAll': 'Show all',
+    'detail.flagsCollapse': 'Show less',
   },
   de: {
     'header.commands': 'Befehle',
@@ -34,6 +37,9 @@ const ui = {
     'detail.copy': 'Kopieren',
     'detail.copied': 'Kopiert!',
     'detail.copyToClipboard': 'In die Zwischenablage kopieren',
+    'detail.flags': 'Flags & Optionen',
+    'detail.flagsShowAll': 'Alle anzeigen',
+    'detail.flagsCollapse': 'Weniger anzeigen',
   },
 } as const satisfies Record<Lang, Record<string, string>>
 

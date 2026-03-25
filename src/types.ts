@@ -5,6 +5,12 @@ export interface CommandExample {
   code: string
 }
 
+export interface CommandFlag {
+  flag: string
+  description: string
+  os?: OS[]
+}
+
 export interface Command {
   id: string
   name: string
@@ -15,6 +21,7 @@ export interface Command {
   examples: CommandExample[]
   tips?: string
   relatedCommands?: string[]
+  flags?: CommandFlag[]
 }
 
 export interface Category {

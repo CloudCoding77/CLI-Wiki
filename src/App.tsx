@@ -114,6 +114,7 @@ export default function App() {
             command={selectedCommand}
             onClose={() => setSelectedCommand(null)}
             onNavigate={setSelectedCommand}
+            selectedOS={selectedOS === 'all' ? null : selectedOS}
           />
         )}
       </div>
