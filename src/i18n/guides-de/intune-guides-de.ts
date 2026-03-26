@@ -15,83 +15,81 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-autopilot-setup': {
     title: 'Windows Autopilot einrichten',
     description:
-      'Erfahren Sie, wie Sie Windows Autopilot konfigurieren, um eine automatisierte, benutzerfreundliche Gerätebereitstellung in Ihrer Organisation zu ermöglichen.',
+      'Konfigurieren Sie Windows Autopilot für die automatisierte Gerätebereitstellung, einschließlich Hardware-Hash-Registrierung, Bereitstellungsprofile, Enrollment Status Page und End-to-End-Tests.',
     prerequisites: [
       'Azure AD Premium P1- oder P2-Lizenz',
-      'Microsoft Intune-Abonnement',
-      'Geräte mit Windows 10/11 Pro, Enterprise oder Education',
-      'Netzwerkzugriff auf Microsoft-Dienste',
+      'Microsoft Intune-Lizenz (eigenständig oder als Teil von EMS E3/E5)',
       'Globaler Administrator oder Intune-Administrator',
+      'Netzwerkzugriff auf Microsoft-Registrierungsendpunkte',
     ],
     steps: [
       {
-        title: 'Hardware-Hashes erfassen',
+        title: 'Lizenzierung und Voraussetzungen prüfen',
         description:
-          'Exportieren Sie die Hardware-Hashes Ihrer Geräte mithilfe eines PowerShell-Skripts oder über den OEM-Partner, um sie für Autopilot zu registrieren.',
-        note: 'Der Befehl Get-WindowsAutopilotInfo kann direkt auf dem Gerät oder remote ausgeführt werden.',
+          'Bestätigen Sie, dass Azure AD Premium P1 und Intune-Lizenzen dem Mandanten zugewiesen sind. Öffnen Sie das Microsoft 365 Admin Center und navigieren Sie zu Abrechnung > Lizenzen, um den Abonnementstatus zu überprüfen.',
+        note: 'Wenn Sie Windows Autopilot für Vorabbereitstellung (White Glove) verwenden, wird Azure AD Premium P2 empfohlen.',
       },
       {
-        title: 'CSV-Datei mit Hardware-Hashes erstellen',
+        title: 'Automatische MDM-Registrierung aktivieren',
         description:
-          'Erstellen Sie eine CSV-Datei mit den Spalten Seriennummer, Windows-Produkt-ID und Hardware-Hash für den Import.',
+          'Konfigurieren Sie in Azure Active Directory die automatische MDM-Registrierung, damit Geräte, die Azure AD beitreten, automatisch in Intune registriert werden.',
       },
       {
-        title: 'Geräte in Autopilot importieren',
+        title: 'Hardware-Hashes von vorhandenen Geräten erfassen',
         description:
-          'Laden Sie die CSV-Datei im Intune-Portal hoch, um die Geräte als Autopilot-Geräte zu registrieren.',
-        note: 'Der Import kann bis zu 15 Minuten dauern. Aktualisieren Sie die Ansicht, um den Status zu prüfen.',
+          'Führen Sie ein PowerShell-Skript auf jedem Zielgerät aus, um den Hardware-Hash in eine CSV-Datei zu exportieren.',
+        note: 'Sie können Hardware-Hashes auch von Ihrem OEM oder Hardwareanbieter anfordern. Dell, HP und Lenovo unterstützen alle den direkten Upload der Hashes in Ihren Mandanten.',
+      },
+      {
+        title: 'Hashes von mehreren Geräten sammeln',
+        description:
+          'Führen Sie für große Bereitstellungen das Sammelskript auf vielen Rechnern aus und führen Sie die Ergebnisse in einer einzigen CSV zusammen.',
+      },
+      {
+        title: 'Hardware-Hashes in Intune importieren',
+        description:
+          'Navigieren Sie im Intune Admin Center zur Windows-Registrierung und importieren Sie die CSV-Datei. Der Importvorgang kann bis zu 15 Minuten dauern.',
+        warning: 'Schließen Sie den Browser-Tab während des Imports nicht. Wenn der Import fehlschlägt, überprüfen Sie, ob das CSV-Format dem erwarteten Drei-Spalten-Schema entspricht.',
+      },
+      {
+        title: 'Dynamische Azure AD-Gerätegruppe erstellen',
+        description:
+          'Erstellen Sie eine Azure AD-Gruppe mit einer dynamischen Geräte-Mitgliedschaftsregel, die auf Autopilot-Geräte abzielt.',
+        note: 'Die Auswertung der dynamischen Gruppenmitgliedschaft kann 5-15 Minuten nach dem Import eines Geräts dauern.',
       },
       {
         title: 'Autopilot-Bereitstellungsprofil erstellen',
         description:
-          'Erstellen Sie ein neues Bereitstellungsprofil und definieren Sie die grundlegenden Einstellungen wie Profilname und Beschreibung.',
+          'Erstellen Sie ein neues Windows Autopilot-Bereitstellungsprofil. Wählen Sie zwischen benutzergesteuertem oder selbstbereitstellendem Modus je nach Szenario.',
       },
       {
-        title: 'OOBE-Erfahrung konfigurieren',
+        title: 'Out-of-Box Experience (OOBE) konfigurieren',
         description:
-          'Legen Sie die Out-of-Box Experience fest: Datenschutzeinstellungen, Lizenzbedingungen, Kontoänderungsoptionen und den Bereitstellungsmodus (benutzergesteuert oder selbstbereitstellend).',
-        warning:
-          'Der selbstbereitstellende Modus erfordert ein TPM 2.0 und eine kabelgebundene Netzwerkverbindung.',
+          'Passen Sie im Bereitstellungsprofil die OOBE-Einstellungen an. Blenden Sie Datenschutzeinstellungen, EULA und Kontoänderungsoptionen nach Bedarf aus.',
+        note: 'Verwenden Sie für Kiosk- oder gemeinsam genutzte Geräte den selbstbereitstellenden Profilmodus und überspringen Sie die Benutzerkontenzuweisung.',
       },
       {
-        title: 'Enrollment Status Page (ESP) einrichten',
+        title: 'Enrollment Status Page (ESP) konfigurieren',
         description:
-          'Konfigurieren Sie die ESP, um den Fortschritt der Geräteeinrichtung anzuzeigen und sicherzustellen, dass alle Apps und Richtlinien angewendet werden, bevor der Benutzer auf den Desktop zugreifen kann.',
+          'Aktivieren Sie die ESP, um den Bereitstellungsfortschritt während des Autopilot-Setups anzuzeigen. Konfigurieren Sie ein angemessenes Timeout (30-60 Minuten).',
+        warning: 'Das Festlegen zu vieler erforderlicher Apps auf der ESP kann zu langen Wartezeiten oder Timeouts führen. Beginnen Sie mit 5-10 kritischen Apps und fügen Sie schrittweise weitere hinzu.',
       },
       {
-        title: 'Dynamische Azure AD-Gruppe erstellen',
+        title: 'Bereitstellungsprofil der Gerätegruppe zuweisen',
         description:
-          'Erstellen Sie eine dynamische Gerätegruppe mit einer Mitgliedschaftsregel, die Autopilot-Geräte automatisch einschließt.',
-        note: 'Verwenden Sie das Attribut device.devicePhysicalIDs, um Autopilot-Geräte zu filtern.',
+          'Weisen Sie das Autopilot-Bereitstellungsprofil der zuvor erstellten dynamischen Azure AD-Gruppe zu.',
       },
       {
-        title: 'Bereitstellungsprofil zuweisen',
+        title: 'Apps und Konfigurationsrichtlinien zuweisen',
         description:
-          'Weisen Sie das erstellte Autopilot-Bereitstellungsprofil der dynamischen Gerätegruppe zu.',
+          'Weisen Sie die erforderlichen Anwendungen und Konfigurationsprofile derselben Gerätegruppe zu. Diese werden während der ESP-Phase oder unmittelbar nach der Registrierung installiert.',
+        note: 'Markieren Sie kritische Apps als "Erforderlich" und setzen Sie sie als blockierend auf der ESP. Nicht-kritische Apps können als "Verfügbar" für Benutzer-Self-Service festgelegt werden.',
       },
       {
-        title: 'Netzwerkanforderungen prüfen',
+        title: 'Autopilot-Bereitstellung testen',
         description:
-          'Stellen Sie sicher, dass die erforderlichen URLs und Ports für Autopilot in Ihrer Firewall freigegeben sind.',
-        note: 'Die vollständige Liste der benötigten Endpunkte finden Sie in der Microsoft-Dokumentation.',
-      },
-      {
-        title: 'Testgerät vorbereiten',
-        description:
-          'Setzen Sie ein registriertes Gerät auf die Werkseinstellungen zurück, um den Autopilot-Ablauf zu testen.',
-        warning:
-          'Alle lokalen Daten auf dem Testgerät werden gelöscht. Sichern Sie wichtige Dateien vorher.',
-      },
-      {
-        title: 'Autopilot-Ablauf testen',
-        description:
-          'Starten Sie das Testgerät, verbinden Sie es mit dem Netzwerk und durchlaufen Sie den Autopilot-OOBE-Prozess, um die Konfiguration zu überprüfen.',
-      },
-      {
-        title: 'Bereitstellung überwachen',
-        description:
-          'Überprüfen Sie den Bereitstellungsstatus im Intune-Portal und analysieren Sie eventuelle Fehler anhand der Diagnoseprotokolle.',
-        note: 'Unter "Geräte > Windows > Windows-Registrierung > Bereitstellungen" finden Sie detaillierte Statusinformationen.',
+          'Setzen Sie ein Testgerät auf Werkseinstellungen zurück und verbinden Sie es mit dem Internet. Das Gerät sollte automatisch das Autopilot-Profil empfangen.',
+        warning: 'Das Zurücksetzen auf Werkseinstellungen löscht alle Daten auf dem Gerät. Führen Sie dies nur auf Testgeräten oder Geräten mit gesicherten Daten durch.',
       },
     ],
   },
@@ -100,68 +98,69 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-win32-app-deploy': {
     title: 'Win32 App deployen',
     description:
-      'Erfahren Sie, wie Sie eine klassische Win32-Anwendung als .intunewin-Paket vorbereiten und über Microsoft Intune bereitstellen.',
+      'Paketieren und Bereitstellen einer Win32-Anwendung über Intune mit dem IntuneWinAppUtil-Tool, einschließlich Erkennungsregeln, Anforderungsregeln und Gruppenzuweisung.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
-      'Microsoft Win32 Content Prep Tool (IntuneWinAppUtil.exe)',
-      'Installationsquelldateien der Anwendung',
+      'Microsoft Win32 Content Prep Tool (IntuneWinAppUtil.exe) heruntergeladen',
+      'Anwendungsquelldateien (Installer, Konfigurationsdateien) in einem Ordner vorbereitet',
       'Intune-Administratorrolle',
     ],
     steps: [
       {
-        title: 'Quelldateien vorbereiten',
+        title: 'Anwendungsquellordner vorbereiten',
         description:
-          'Legen Sie alle Installationsdateien der Anwendung in einem einzelnen Ordner ab. Stellen Sie sicher, dass die Setup-Datei und alle Abhängigkeiten vorhanden sind.',
+          'Erstellen Sie einen dedizierten Ordner mit allen Dateien, die für die Anwendungsinstallation benötigt werden.',
+        note: 'Halten Sie die Ordnerstruktur möglichst flach. Verschachtelte Ordner werden unterstützt, erhöhen aber die Paketkomplexität.',
       },
       {
-        title: 'IntuneWinAppUtil herunterladen',
+        title: 'App mit IntuneWinAppUtil paketieren',
         description:
-          'Laden Sie das Microsoft Win32 Content Prep Tool von GitHub herunter und entpacken Sie es in einen lokalen Ordner.',
+          'Führen Sie IntuneWinAppUtil.exe aus, um den Quellordner in ein .intunewin-Paket umzuwandeln.',
+        note: 'Der Parameter -q führt das Tool im stillen Modus aus. -c ist der Quellordner, -s der Name der Setup-Datei und -o der Ausgabeordner.',
       },
       {
-        title: 'Anwendung paketieren',
+        title: 'Neue Win32-App in Intune erstellen',
         description:
-          'Führen Sie IntuneWinAppUtil.exe aus und geben Sie den Quellordner, die Setup-Datei und den Ausgabeordner an, um die .intunewin-Datei zu erstellen.',
-        note: 'Verwenden Sie den Parameter -q für den stillen Modus ohne Benutzerabfragen.',
-      },
-      {
-        title: 'Neue Win32 App im Portal anlegen',
-        description:
-          'Navigieren Sie im Intune-Portal zu den Apps und erstellen Sie eine neue Windows-App (Win32). Laden Sie die erstellte .intunewin-Datei hoch.',
+          'Starten Sie im Intune Admin Center den Win32-App-Erstellungsassistenten. Wählen Sie die im vorherigen Schritt generierte .intunewin-Datei aus.',
       },
       {
         title: 'App-Informationen konfigurieren',
         description:
-          'Geben Sie Name, Beschreibung, Herausgeber, App-Version und optional ein Symbol für die Anwendung ein.',
+          'Füllen Sie den App-Namen, die Beschreibung, den Herausgeber und die Version aus. Fügen Sie bei Bedarf ein Logo hinzu.',
+        note: 'Der App-Name und Herausgeber sind für Endbenutzer in der Unternehmensportal-App sichtbar.',
       },
       {
-        title: 'Installations- und Deinstallationsbefehle festlegen',
+        title: 'Installations- und Deinstallationsbefehle definieren',
         description:
-          'Definieren Sie die Kommandozeilenbefehle für die stille Installation und Deinstallation der Anwendung.',
-        note: 'Für MSI-basierte Installationen verwenden Sie msiexec /i mit dem /qn-Parameter für eine stille Installation.',
+          'Geben Sie die Befehlszeilen für die stille Installation und Deinstallation an. Verwenden Sie die entsprechenden Schalter für Ihren Installer-Typ.',
+        warning: 'Falsche Installationsbefehle sind die häufigste Ursache für Bereitstellungsfehler. Testen Sie den stillen Installationsbefehl immer manuell auf einem Testgerät, bevor Sie ihn über Intune bereitstellen.',
       },
       {
-        title: 'Anforderungen definieren',
+        title: 'Anforderungsregeln festlegen',
         description:
-          'Legen Sie die Mindestanforderungen an das Betriebssystem, die Architektur (32/64-Bit) und den Festplattenspeicher fest.',
+          'Definieren Sie die Mindest-OS-Version, Architektur (32-Bit oder 64-Bit) und Speicherplatzanforderungen.',
+        note: 'Die Einstellung der OS-Architektur ist obligatorisch. Wählen Sie 64-Bit, es sei denn, die App erfordert ausdrücklich 32-Bit.',
       },
       {
-        title: 'Erkennungsregeln erstellen',
+        title: 'Erkennungsregeln konfigurieren',
         description:
-          'Konfigurieren Sie Regeln, anhand derer Intune erkennt, ob die Anwendung bereits installiert ist. Sie können MSI-Produktcodes, Dateien/Ordner oder Registrierungsschlüssel verwenden.',
-        warning:
-          'Fehlerhafte Erkennungsregeln können dazu führen, dass die App wiederholt installiert oder als nicht installiert gemeldet wird.',
+          'Fügen Sie Erkennungsregeln hinzu, damit Intune feststellen kann, ob die App bereits installiert ist.',
+        warning: 'Wenn Erkennungsregeln falsch konfiguriert sind, wird die App bei jedem Synchronisierungszyklus neu installiert oder nie als installiert angezeigt. Testen Sie Erkennungsregeln gründlich.',
       },
       {
-        title: 'Zuweisung konfigurieren',
+        title: 'Rückgabecodes konfigurieren',
         description:
-          'Weisen Sie die App als erforderliche Installation, verfügbare Installation oder als Deinstallation den gewünschten Benutzer- oder Gerätegruppen zu.',
+          'Überprüfen Sie die Standard-Rückgabecodes und fügen Sie bei Bedarf benutzerdefinierte hinzu.',
       },
       {
-        title: 'Bereitstellung überwachen',
+        title: 'App Gruppen zuweisen',
         description:
-          'Überprüfen Sie den Installationsstatus im Intune-Portal. Analysieren Sie fehlgeschlagene Installationen anhand der Fehler-Codes und der Intune Management Extension-Protokolle.',
-        note: 'Die Intune Management Extension-Protokolle befinden sich unter C:\\ProgramData\\Microsoft\\IntuneManagementExtension\\Logs.',
+          'Weisen Sie die App als "Erforderlich" für Gruppen zu, die sie automatisch erhalten sollen, oder als "Verfügbar" für Self-Service-Installation.',
+        note: 'Verwenden Sie "Verfügbar"-Zuweisungen für optionale Software, um Bandbreite zu sparen und Benutzern die Wahl zu lassen. Verwenden Sie "Erforderlich" für geschäftskritische Apps.',
+      },
+      {
+        title: 'Bereitstellungsstatus überwachen',
+        description:
+          'Überwachen Sie die Bereitstellung über die App-Übersichtsseite. Prüfen Sie den Geräte- und Benutzerinstallationsstatus.',
       },
     ],
   },
@@ -170,49 +169,48 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-lob-msi-deploy': {
     title: 'LOB App (MSI) deployen',
     description:
-      'Erfahren Sie, wie Sie eine Line-of-Business-Anwendung im MSI-Format direkt über Intune bereitstellen, ohne das Win32 Content Prep Tool verwenden zu müssen.',
+      'Hochladen und Bereitstellen einer Branchenanwendung im MSI-Format über Intune mit minimaler Konfiguration, einschließlich Zuweisung und Installationsüberwachung.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
-      'MSI-Installationsdatei der Anwendung',
+      'MSI-Installationsdatei zum Upload bereit',
       'Intune-Administratorrolle',
     ],
     steps: [
       {
-        title: 'MSI-Datei vorbereiten',
+        title: 'LOB-App-Upload starten',
         description:
-          'Stellen Sie sicher, dass die MSI-Datei gültig ist und alle erforderlichen Abhängigkeiten enthält. Prüfen Sie die Dateigröße (maximal 8 GB).',
+          'Fügen Sie im Intune Admin Center eine neue Branchenanwendung hinzu. Wählen Sie die MSI-Datei von Ihrem lokalen Rechner aus.',
       },
       {
-        title: 'Neue LOB-App erstellen',
+        title: 'Auf Dateiverarbeitung warten',
         description:
-          'Navigieren Sie im Intune-Portal zu den Apps und erstellen Sie eine neue Line-of-Business-App. Wählen Sie den App-Typ "Branchenspezifische App" aus.',
-      },
-      {
-        title: 'MSI-Datei hochladen',
-        description:
-          'Laden Sie die MSI-Datei hoch. Intune extrahiert automatisch die App-Informationen wie Produktname, Version und Herausgeber aus der MSI-Datei.',
-        note: 'Der Upload kann je nach Dateigröße und Internetgeschwindigkeit einige Minuten dauern.',
+          'Nach Auswahl der MSI-Datei verarbeitet und lädt Intune diese hoch. Schließen Sie den Browser-Tab nicht.',
+        warning: 'Wenn der Upload fehlschlägt, überprüfen Sie Ihre Netzwerkverbindung und stellen Sie sicher, dass die MSI-Datei nicht beschädigt ist.',
       },
       {
         title: 'App-Informationen konfigurieren',
         description:
-          'Überprüfen und ergänzen Sie die automatisch erkannten App-Informationen. Fügen Sie bei Bedarf eine Beschreibung, Kategorie und ein App-Symbol hinzu.',
+          'Überprüfen Sie die automatisch erkannten App-Informationen. Intune liest Name, Version, Herausgeber und Produktcode aus den MSI-Metadaten.',
+        note: 'Der MSI-Produktcode wird automatisch für die Erkennung verwendet, sodass Sie keine Erkennungsregeln manuell konfigurieren müssen.',
       },
       {
-        title: 'Befehlszeilenargumente festlegen',
+        title: 'Befehlszeilenargumente festlegen (optional)',
         description:
-          'Definieren Sie optionale Befehlszeilenargumente für die MSI-Installation, z. B. zusätzliche Properties oder Transformationsdateien.',
+          'Fügen Sie bei Bedarf zusätzliche msiexec-Befehlszeilenargumente hinzu.',
       },
       {
-        title: 'Zuweisung konfigurieren',
+        title: 'App Gruppen zuweisen',
         description:
-          'Weisen Sie die App den gewünschten Benutzer- oder Gerätegruppen als erforderliche oder verfügbare Installation zu.',
+          'Weisen Sie die App als "Erforderlich" für automatische Bereitstellung oder als "Verfügbar" für Self-Service zu.',
       },
       {
-        title: 'Installation überwachen',
+        title: 'Installationsstatus überwachen',
         description:
-          'Überwachen Sie den Installationsstatus über das Intune-Portal und stellen Sie sicher, dass die App auf den Zielgeräten erfolgreich installiert wurde.',
-        note: 'Bei Fehlern prüfen Sie die Ereignisprotokolle auf dem Gerät unter "Anwendungs- und Dienstprotokolle > Microsoft > Windows > DeviceManagement-Enterprise-Diagnostics-Provider".',
+          'Überprüfen Sie den Geräteinstallationsstatus, um zu verfolgen, welche Geräte die App erfolgreich installiert haben.',
+      },
+      {
+        title: 'Auf einem Zielgerät überprüfen',
+        description:
+          'Lösen Sie auf einem Testgerät eine manuelle Intune-Synchronisierung aus und überprüfen Sie, ob die Anwendung installiert wurde.',
       },
     ],
   },
@@ -221,44 +219,44 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-store-app': {
     title: 'Microsoft Store App zuweisen',
     description:
-      'Erfahren Sie, wie Sie Anwendungen aus dem Microsoft Store über die neue Store-Integration in Intune suchen, konfigurieren und Ihren Benutzern zuweisen.',
+      'Hinzufügen und Zuweisen einer Microsoft Store App über die neue in Intune integrierte Store-Oberfläche mit automatischen Updates und Lizenzverwaltung.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
-      'Geräte mit Windows 10 (Version 1903) oder höher',
       'Intune-Administratorrolle',
+      'Zielgeräte mit Windows 10 1809 oder höher',
     ],
     steps: [
       {
-        title: 'Neue Microsoft Store App hinzufügen',
+        title: 'Microsoft Store Apps-Bereich öffnen',
         description:
-          'Navigieren Sie im Intune-Portal zu den Apps und wählen Sie den App-Typ "Microsoft Store App (neu)" aus, um die neue Store-Integration zu nutzen.',
+          'Navigieren Sie im Intune Admin Center zum Apps-Bereich und fügen Sie eine neue App hinzu. Wählen Sie "Microsoft Store App (neu)" als App-Typ.',
       },
       {
-        title: 'App im Store suchen',
+        title: 'Nach der App suchen',
         description:
-          'Verwenden Sie die integrierte Suchfunktion, um die gewünschte Anwendung im Microsoft Store zu finden. Wählen Sie die korrekte App aus den Suchergebnissen aus.',
-        note: 'Sie können auch direkt eine Store-URL einfügen, um eine bestimmte App zu finden.',
+          'Verwenden Sie die integrierte Suche, um die gewünschte App aus dem Microsoft Store-Katalog zu finden.',
+        note: 'Nur Apps, die Offline-Lizenzierung oder die neue Store-Integration unterstützen, werden angezeigt. Einige reine Verbraucher-Apps sind möglicherweise nicht verfügbar.',
       },
       {
-        title: 'App-Informationen überprüfen',
+        title: 'App-Einstellungen konfigurieren',
         description:
-          'Überprüfen Sie die automatisch ausgefüllten App-Informationen wie Name, Herausgeber und Beschreibung. Passen Sie diese bei Bedarf an.',
+          'Überprüfen Sie die App-Informationen und wählen Sie den Installer-Typ. Stellen Sie das Installationsverhalten auf Systemkontext ein.',
+        note: 'Der winget-Installer-Typ ermöglicht es Intune, Win32-Desktop-Apps aus dem Store mit besserer Zuverlässigkeit und Update-Verwaltung zu installieren.',
       },
       {
-        title: 'Installationsverhalten konfigurieren',
+        title: 'App Gruppen zuweisen',
         description:
-          'Wählen Sie, ob die App im System- oder Benutzerkontext installiert werden soll. Legen Sie fest, ob die App automatisch aktualisiert werden soll.',
+          'Weisen Sie die App Ihren Azure AD-Zielgruppen zu. Wählen Sie "Erforderlich" für automatische Bereitstellung oder "Verfügbar" für Self-Service.',
       },
       {
-        title: 'Zuweisung konfigurieren',
+        title: 'Update-Verhalten konfigurieren',
         description:
-          'Weisen Sie die App den gewünschten Benutzer- oder Gerätegruppen zu. Sie können die App als erforderlich oder als im Unternehmensportal verfügbar zuweisen.',
+          'Über Intune konfigurierte Microsoft Store Apps erhalten standardmäßig automatische Updates. Für die meisten Organisationen wird empfohlen, automatische Updates aktiviert zu lassen.',
+        note: 'Automatische Updates reduzieren das Sicherheitsrisiko und den Verwaltungsaufwand. Deaktivieren Sie sie nur, wenn Sie einen bestimmten Compliance-Grund haben.',
       },
       {
         title: 'Bereitstellung überprüfen',
         description:
-          'Überwachen Sie den Installationsstatus im Intune-Portal und stellen Sie sicher, dass die App auf den Zielgeräten erfolgreich bereitgestellt wurde.',
-        note: 'Die neue Store-Integration erfordert keine Microsoft Store for Business-Konfiguration.',
+          'Überprüfen Sie den App-Installationsstatus im Intune-Portal. Warten Sie bis zu einem Synchronisierungszyklus, bis die Zuweisung die Geräte erreicht.',
       },
     ],
   },
@@ -267,62 +265,61 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-compliance-policy': {
     title: 'Compliance-Richtlinie erstellen',
     description:
-      'Erfahren Sie, wie Sie in Intune eine Compliance-Richtlinie erstellen, die den Gerätezustand, die Systemsicherheit und Kennwortanforderungen überprüft und Aktionen bei Nichtkonformität auslöst.',
+      'Definieren und Bereitstellen einer Geräte-Compliance-Richtlinie für Geräteintegrität, Systemsicherheit, Kennwortanforderungen und Aktionen bei Nichtkonformität mit Integration des bedingten Zugriffs.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
-      'Azure AD Premium für bedingten Zugriff (empfohlen)',
       'Intune-Administratorrolle',
+      'Azure AD-Gruppen für die Richtlinienausrichtung',
+      'Verständnis der organisatorischen Sicherheitsanforderungen',
     ],
     steps: [
       {
-        title: 'Neue Compliance-Richtlinie erstellen',
+        title: 'Zu Compliance-Richtlinien navigieren',
         description:
-          'Navigieren Sie im Intune-Portal zu den Compliance-Richtlinien und erstellen Sie eine neue Richtlinie. Wählen Sie die Plattform "Windows 10 und höher" aus.',
+          'Öffnen Sie das Intune Admin Center und navigieren Sie zum Bereich Compliance-Richtlinien. Überprüfen Sie vorhandene Richtlinien, um Konflikte zu vermeiden.',
+      },
+      {
+        title: 'Plattform auswählen und Richtlinie erstellen',
+        description:
+          'Wählen Sie die Zielplattform (Windows 10 und höher, iOS/iPadOS, Android oder macOS). Geben Sie einen beschreibenden Richtliniennamen ein.',
       },
       {
         title: 'Geräteintegrität konfigurieren',
         description:
-          'Legen Sie Anforderungen an die Geräteintegrität fest, z. B. ob BitLocker aktiviert sein muss, ob Secure Boot erforderlich ist und ob die Codeintegrität aktiviert sein muss.',
+          'Aktivieren Sie die relevanten Geräteintegritätsprüfungen. Konfigurieren Sie BitLocker-Anforderung, Secure Boot und Codeintegrität.',
+        note: 'Die Geräteintegritätsbestätigung erfordert, dass Geräte mit dem Microsoft Health Attestation Service kommunizieren. Stellen Sie sicher, dass der Endpunkt nicht durch Ihre Firewall blockiert wird.',
       },
       {
-        title: 'Geräteeigenschaften festlegen',
+        title: 'Geräteeigenschaften konfigurieren',
         description:
-          'Definieren Sie Anforderungen an die Betriebssystemversion, z. B. Mindest- und Maximalversion des Betriebssystems.',
+          'Legen Sie die minimal und maximal zulässigen Betriebssystemversionen fest, um sicherzustellen, dass Geräte unterstützte Builds ausführen.',
       },
       {
-        title: 'Systemsicherheit konfigurieren',
+        title: 'Systemsicherheitseinstellungen konfigurieren',
         description:
-          'Legen Sie Sicherheitsanforderungen fest: Firewall, TPM, Antivirenprogramm und Antispyware müssen aktiviert sein.',
-        warning:
-          'Stellen Sie sicher, dass alle Zielgeräte die konfigurierten Sicherheitsanforderungen erfüllen können, bevor Sie die Richtlinie zuweisen.',
+          'Legen Sie Kennwortanforderungen fest, einschließlich Mindestlänge, Komplexität und Ablauf. Aktivieren Sie Firewall-, Antivirus- und Antispyware-Anforderungen.',
+        warning: 'Zu strenge Kennwortrichtlinien (z. B. 16+ Zeichen, 30-Tage-Ablauf) können zu Benutzerfrustration und Umgehungsversuchen führen. Wägen Sie Sicherheit und Benutzerfreundlichkeit ab.',
       },
       {
-        title: 'Kennwortanforderungen definieren',
+        title: 'Microsoft Defender-Einstellungen konfigurieren',
         description:
-          'Konfigurieren Sie die Kennwortrichtlinie: Mindestkennwortlänge, Kennwortkomplexität, maximales Kennwortalter und die Anzahl der vorherigen Kennwörter, die nicht wiederverwendet werden dürfen.',
+          'Legen Sie bei Verwendung von Microsoft Defender for Endpoint die maximal zulässige Geräterisikostufe fest.',
+        note: 'Diese Einstellung erfordert, dass Microsoft Defender for Endpoint eingebunden und mit Intune verbunden ist.',
       },
       {
-        title: 'Microsoft Defender for Endpoint konfigurieren',
+        title: 'Aktionen bei Nichtkonformität konfigurieren',
         description:
-          'Legen Sie optional eine maximale Risikostufe für Geräte fest, die über Microsoft Defender for Endpoint gemeldet wird.',
-        note: 'Diese Einstellung erfordert eine aktive Microsoft Defender for Endpoint-Integration.',
+          'Definieren Sie, was passiert, wenn ein Gerät nicht mehr konform ist. Fügen Sie Aktionen wie E-Mail-Benachrichtigungen, Remote-Sperrung oder Außerbetriebnahme nach einer Übergangsfrist hinzu.',
+        note: 'Ein gängiges Muster ist: Tag 0 – als nicht konform markieren und Benutzer benachrichtigen, Tag 3 – Erinnerung senden, Tag 7 – Zugriff über bedingten Zugriff blockieren, Tag 14 – Gerät außer Betrieb nehmen.',
       },
       {
-        title: 'Aktionen bei Nichtkonformität festlegen',
+        title: 'Richtlinie Gruppen zuweisen',
         description:
-          'Definieren Sie die Aktionen, die ausgeführt werden, wenn ein Gerät die Compliance-Anforderungen nicht erfüllt: Gerät als nicht konform markieren, E-Mail-Benachrichtigung senden, Gerät remote sperren oder außer Betrieb nehmen.',
-        note: 'Sie können Zeitverzögerungen für jede Aktion festlegen, z. B. das Gerät erst nach 3 Tagen als nicht konform markieren.',
-      },
-      {
-        title: 'Zuweisung konfigurieren',
-        description:
-          'Weisen Sie die Compliance-Richtlinie den gewünschten Benutzer- oder Gerätegruppen zu. Schließen Sie bei Bedarf bestimmte Gruppen von der Richtlinie aus.',
+          'Weisen Sie die Compliance-Richtlinie den Azure AD-Zielgruppen zu. Erwägen Sie einen stufenweisen Rollout.',
       },
       {
         title: 'Compliance-Status überwachen',
         description:
-          'Überprüfen Sie den Compliance-Status der Geräte im Intune-Portal. Analysieren Sie nicht konforme Geräte und die spezifischen Regeln, die verletzt wurden.',
-        note: 'Kombinieren Sie Compliance-Richtlinien mit bedingtem Zugriff in Azure AD, um den Zugriff auf Unternehmensressourcen auf konforme Geräte zu beschränken.',
+          'Überwachen Sie nach der Zuweisung das Compliance-Dashboard für die Ergebnisse der Richtlinienauswertung.',
       },
     ],
   },
@@ -331,67 +328,67 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-config-profile': {
     title: 'Konfigurationsprofil erstellen',
     description:
-      'Erfahren Sie, wie Sie in Intune ein Gerätekonfigurationsprofil erstellen, um Einstellungen auf verwalteten Geräten zentral zu verwalten. Lernen Sie den Unterschied zwischen dem Einstellungskatalog und administrativen Vorlagen kennen.',
+      'Erstellen und Bereitstellen von Gerätekonfigurationsprofilen mit dem Einstellungskatalog oder Vorlagen zur Verwaltung von Geräteeinstellungen, Einschränkungen und Funktionen.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
       'Intune-Administratorrolle',
-      'Zielgeräte mit Windows 10/11',
+      'Verständnis der zu konfigurierenden Einstellungen',
+      'Azure AD-Gruppen für die Profilausrichtung',
     ],
     steps: [
       {
-        title: 'Profiltyp auswählen',
+        title: 'Zwischen Einstellungskatalog und Vorlagen wählen',
         description:
-          'Wählen Sie zwischen dem Einstellungskatalog (empfohlen für granulare Kontrolle) und administrativen Vorlagen (ADMX-basiert). Der Einstellungskatalog bietet eine flache, durchsuchbare Liste aller verfügbaren Einstellungen.',
-        note: 'Der Einstellungskatalog wird von Microsoft bevorzugt und erhält regelmäßig neue Einstellungen.',
+          'Intune bietet zwei Ansätze: den Einstellungskatalog (granular, durchsuchbar, empfohlen) und Vorlagen (vorgefertigte Gruppierungen wie Geräteeinschränkungen, WLAN, VPN).',
+        note: 'Der Einstellungskatalog ersetzt viele ältere vorlagenbasierte Profile. Microsoft empfiehlt seine Verwendung für neue Bereitstellungen. Vorlagen sind weiterhin nützlich für WLAN, VPN, Zertifikate und SCEP-Profile.',
       },
       {
         title: 'Neues Konfigurationsprofil erstellen',
         description:
-          'Navigieren Sie im Intune-Portal zu den Konfigurationsprofilen und erstellen Sie ein neues Profil. Wählen Sie die Plattform und den gewünschten Profiltyp aus.',
+          'Navigieren Sie zum Bereich Konfigurationsprofile und erstellen Sie ein neues Profil. Wählen Sie die Zielplattform und den Profiltyp.',
       },
       {
-        title: 'Profilname und Beschreibung festlegen',
+        title: 'Einstellungen hinzufügen (Einstellungskatalog)',
         description:
-          'Vergeben Sie einen aussagekräftigen Namen und eine Beschreibung für das Profil, damit es später leicht identifiziert werden kann.',
+          'Klicken Sie bei Verwendung des Einstellungskatalogs auf "Einstellungen hinzufügen" und suchen oder durchsuchen Sie Kategorien.',
+        note: 'Verwenden Sie die Suchfunktion, um Einstellungen schnell zu finden. Suchen Sie beispielsweise nach "Kennwort", um alle kennwortbezogenen Einstellungen über alle Kategorien hinweg zu finden.',
       },
       {
-        title: 'Einstellungen im Einstellungskatalog suchen',
+        title: 'Vorlageneinstellungen konfigurieren (bei Verwendung von Vorlagen)',
         description:
-          'Verwenden Sie die Suchfunktion des Einstellungskatalogs, um die gewünschten Einstellungen zu finden. Fügen Sie die relevanten Einstellungen zum Profil hinzu.',
+          'Konfigurieren Sie bei Verwendung eines Vorlagenprofils jede Einstellungsseite im Assistenten.',
       },
       {
-        title: 'Einstellungen konfigurieren',
+        title: 'Bereichstags konfigurieren',
         description:
-          'Konfigurieren Sie die hinzugefügten Einstellungen mit den gewünschten Werten. Überprüfen Sie die Beschreibung jeder Einstellung, um ihre Auswirkungen zu verstehen.',
-        warning:
-          'Falsch konfigurierte Einstellungen können die Benutzererfahrung beeinträchtigen oder Sicherheitslücken verursachen. Testen Sie Profile immer zuerst an einer Pilotgruppe.',
+          'Weisen Sie Bereichstags zu, um die Profilsichtbarkeit auf bestimmte Administratoren zu beschränken.',
+        note: 'Bereichstags sind optional, werden aber für Organisationen mit mehreren IT-Teams oder regionalen Administratoren empfohlen.',
       },
       {
-        title: 'Administrative Vorlagen verwenden (optional)',
+        title: 'Profil Gruppen zuweisen',
         description:
-          'Alternativ können Sie administrative Vorlagen nutzen, die auf ADMX-Dateien basieren und die gleiche Struktur wie Gruppenrichtlinien bieten.',
+          'Weisen Sie das Konfigurationsprofil den Azure AD-Zielgruppen zu. Erwägen Sie, separate Profile für verschiedene Benutzergruppen zu erstellen.',
       },
       {
-        title: 'Bereichstags zuweisen',
+        title: 'Anwendbarkeitsregeln festlegen (optional)',
         description:
-          'Weisen Sie dem Profil Bereichstags zu, um die Verwaltung auf bestimmte IT-Administratorengruppen einzuschränken.',
-        note: 'Bereichstags sind optional, aber empfehlenswert für größere Organisationen mit delegierter Administration.',
+          'Konfigurieren Sie Anwendbarkeitsregeln, um weitere Filter basierend auf Betriebssystemversion oder -edition festzulegen.',
       },
       {
-        title: 'Zuweisung konfigurieren',
+        title: 'Überprüfen und erstellen',
         description:
-          'Weisen Sie das Konfigurationsprofil den gewünschten Benutzer- oder Gerätegruppen zu. Verwenden Sie Ausschlussgruppen, um bestimmte Geräte von der Konfiguration auszunehmen.',
-      },
-      {
-        title: 'Anwendbarkeitsregeln definieren',
-        description:
-          'Definieren Sie optional Anwendbarkeitsregeln, um das Profil nur auf Geräte mit bestimmten Betriebssystemversionen oder -editionen anzuwenden.',
+          'Überprüfen Sie alle konfigurierten Einstellungen auf der Zusammenfassungsseite, bevor Sie das Profil erstellen.',
+        warning: 'Falsche Konfigurationsprofile können Benutzer von ihren Geräten aussperren oder Funktionen beeinträchtigen. Testen Sie immer zuerst mit einer kleinen Pilotgruppe.',
       },
       {
         title: 'Profilbereitstellung überwachen',
         description:
-          'Überprüfen Sie den Bereitstellungsstatus im Intune-Portal. Analysieren Sie Fehler und Konflikte zwischen verschiedenen Profilen.',
-        note: 'Bei Konflikten zwischen Profilen wird der restriktivere Wert angewendet. Prüfen Sie die Berichtsansicht auf Konfliktwarnungen.',
+          'Überprüfen Sie den Bereitstellungsstatus im Intune-Portal. Die Übersicht zeigt Erfolgs-, Fehler-, Konflikt- und ausstehende Zählungen.',
+      },
+      {
+        title: 'Konflikte und Fehler beheben',
+        description:
+          'Verwenden Sie bei Geräten mit Fehlern oder Konflikten die gerätebasierte Detailansicht, um fehlgeschlagene Einstellungen zu identifizieren.',
+        note: 'Verwenden Sie den Intune-Diagnosebericht auf dem Gerät (Einstellungen > Konten > Auf Geschäfts-, Schul- oder Unikonto zugreifen > Info > Bericht erstellen) für detaillierte Richtlinienanwendungsprotokolle.',
       },
     ],
   },
@@ -400,56 +397,56 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-update-ring': {
     title: 'Windows Update Ring konfigurieren',
     description:
-      'Erfahren Sie, wie Sie einen Windows Update Ring in Intune konfigurieren, um Funktions- und Qualitätsupdates mit definierten Verzögerungsfristen und Benutzererfahrungseinstellungen zu verwalten.',
+      'Erstellen und Bereitstellen einer Windows Update Ring-Richtlinie zur Steuerung von Update-Verzögerungszeiträumen, Benutzererfahrungseinstellungen und automatischem Update-Verhalten.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
-      'Windows 10/11 Pro, Enterprise oder Education',
       'Intune-Administratorrolle',
+      'Geräte mit Windows 10 1709 oder höher',
+      'Azure AD-Gruppen für die Update-Ring-Ausrichtung',
     ],
     steps: [
       {
+        title: 'Update-Ring-Strategie planen',
+        description:
+          'Planen Sie vor dem Erstellen von Update-Ringen Ihre Rollout-Strategie. Ein gängiger Ansatz ist drei Ringe: Vorschau (IT-Team, 0-Tage), Breit (Early Adopter, 7 Tage) und Allgemein (alle Benutzer, 14 Tage).',
+        note: 'Microsoft empfiehlt mindestens zwei Update-Ringe, um einen gestaffelten Rollout und die Validierung von Updates zu ermöglichen.',
+      },
+      {
         title: 'Neuen Update Ring erstellen',
         description:
-          'Navigieren Sie im Intune-Portal zu den Windows Update Ringen und erstellen Sie einen neuen Update Ring. Vergeben Sie einen aussagekräftigen Namen.',
+          'Navigieren Sie zum Windows Update-Bereich und erstellen Sie eine neue Update Ring-Richtlinie mit einem beschreibenden Namen.',
       },
       {
-        title: 'Updatekanaleinstellungen festlegen',
+        title: 'Update-Verzögerungszeiträume konfigurieren',
         description:
-          'Wählen Sie den Wartungskanal (z. B. Halbjährlicher Kanal) und konfigurieren Sie den Microsoft-Produktupdateservice.',
-        note: 'Der Halbjährliche Kanal wird für die meisten Produktionsumgebungen empfohlen.',
+          'Legen Sie die Verzögerungszeiträume für Qualitätsupdates (Sicherheitspatches) und Funktionsupdates (größere Windows-Releases) fest.',
+        note: 'Für die meisten Organisationen bietet eine Verzögerung der Qualitätsupdates um 7-14 Tage und der Funktionsupdates um 60-90 Tage eine gute Balance zwischen Sicherheit und Stabilität.',
       },
       {
-        title: 'Verzögerungsfristen konfigurieren',
+        title: 'Wartungskanal konfigurieren',
         description:
-          'Legen Sie die Verzögerungszeiträume für Qualitätsupdates (in Tagen) und Funktionsupdates (in Tagen) fest. Die Verzögerung bestimmt, wie lange nach der Veröffentlichung ein Update angeboten wird.',
-        warning:
-          'Zu lange Verzögerungen können Sicherheitslücken offenlassen. Empfohlen: 7-14 Tage für Qualitätsupdates, 30-60 Tage für Funktionsupdates.',
+          'Wählen Sie den Windows-Wartungskanal für den Update Ring. Der General Availability Channel wird für die meisten Geräte empfohlen.',
       },
       {
-        title: 'Fristen und Neustartzeiträume festlegen',
+        title: 'Benutzererfahrungseinstellungen konfigurieren',
         description:
-          'Konfigurieren Sie die Frist, bis zu der Updates installiert sein müssen, und definieren Sie die Kulanzzeit für automatische Neustarts.',
+          'Steuern Sie, wie Updates den Benutzern präsentiert werden. Konfigurieren Sie Auto-Neustart-Verhalten, aktive Stunden und Neustartbenachrichtigungen.',
+        warning: 'Das Erzwingen von Neustarts während der Geschäftszeiten kann zu Datenverlust führen, wenn Benutzer nicht gespeicherte Arbeit haben. Konfigurieren Sie aktive Stunden oder verwenden Sie fristbasierte Neustarts.',
       },
       {
-        title: 'Benutzererfahrung konfigurieren',
+        title: 'Automatisches Update-Verhalten konfigurieren',
         description:
-          'Legen Sie fest, wie Benutzer über ausstehende Updates und Neustarts benachrichtigt werden. Konfigurieren Sie aktive Nutzungszeiten, in denen keine automatischen Neustarts erfolgen.',
+          'Legen Sie das automatische Update-Verhalten fest. Für die meisten verwalteten Umgebungen bietet "Automatisch installieren und zum geplanten Zeitpunkt neu starten" die beste Balance.',
       },
       {
-        title: 'Automatische Updateeinstellungen festlegen',
+        title: 'Update Ring Gruppen zuweisen',
         description:
-          'Wählen Sie das automatische Updateverhalten: automatisch herunterladen und installieren, nur herunterladen oder Benutzer benachrichtigen.',
-      },
-      {
-        title: 'Zuweisung konfigurieren',
-        description:
-          'Weisen Sie den Update Ring den gewünschten Gerätegruppen zu. Verwenden Sie verschiedene Update Ringe für Pilotgruppen und Produktionsgeräte.',
-        note: 'Erstellen Sie einen separaten Ring mit kürzeren Verzögerungen für die IT-Abteilung als Pilotgruppe.',
+          'Weisen Sie den Update Ring den entsprechenden Azure AD-Gruppen zu. Jedes Gerät sollte nur einen Update Ring erhalten, um Konflikte zu vermeiden.',
+        warning: 'Vermeiden Sie die Zuweisung mehrerer Update Ringe an dasselbe Gerät. Verwenden Sie exklusive Gruppenmitgliedschaft, um Konflikte zu verhindern.',
       },
       {
         title: 'Update-Compliance überwachen',
         description:
-          'Überwachen Sie den Update-Status über das Intune-Portal und die Windows Update for Business-Berichte. Identifizieren Sie Geräte, die Updates nicht erfolgreich installieren konnten.',
+          'Verwenden Sie die Windows Update-Compliance-Berichte, um zu verfolgen, welche Geräte die neuesten Updates installiert haben.',
       },
     ],
   },
@@ -458,57 +455,56 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-powershell-script': {
     title: 'PowerShell-Skript bereitstellen',
     description:
-      'Erfahren Sie, wie Sie ein PowerShell-Skript über Intune auf verwalteten Geräten bereitstellen, um Aufgaben zu automatisieren, die über Standard-Konfigurationsprofile hinausgehen.',
+      'Hochladen und Bereitstellen eines PowerShell-Skripts auf verwalteten Geräten über Intune, einschließlich Ausführungskontextkonfiguration, Wiederholungseinstellungen und Bereitstellungsüberwachung.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
-      'PowerShell-Skript (.ps1-Datei)',
       'Intune-Administratorrolle',
-      'Geräte mit Windows 10/11 und der Intune Management Extension',
+      'PowerShell-Skriptdatei (.ps1) vorbereitet und lokal getestet',
+      'Zielgeräte mit Windows 10 1709 oder höher',
     ],
     steps: [
       {
         title: 'PowerShell-Skript vorbereiten',
         description:
-          'Erstellen und testen Sie das PowerShell-Skript lokal. Stellen Sie sicher, dass das Skript keine Benutzerinteraktion erfordert und entsprechende Exit-Codes zurückgibt.',
-        warning:
-          'Skripte werden im SYSTEM-Kontext oder im Benutzerkontext ausgeführt. Testen Sie das Skript im entsprechenden Kontext, bevor Sie es bereitstellen.',
+          'Schreiben und testen Sie Ihr PowerShell-Skript lokal, bevor Sie es über Intune bereitstellen. Stellen Sie sicher, dass das Skript Fehler korrekt behandelt und Protokollierung enthält.',
+        note: 'Fügen Sie immer Fehlerbehandlung und Protokollierung hinzu. Skripte, die stillschweigend fehlschlagen, sind über Intune extrem schwer zu debuggen.',
       },
       {
-        title: 'Skriptanforderungen prüfen',
+        title: 'Zur Skriptbereitstellung navigieren',
         description:
-          'Stellen Sie sicher, dass das Skript die Anforderungen erfüllt: maximale Dateigröße 200 KB, UTF-8-Kodierung (mit oder ohne BOM) und keine interaktiven Elemente.',
-      },
-      {
-        title: 'Neues Skript im Portal erstellen',
-        description:
-          'Navigieren Sie im Intune-Portal zu den PowerShell-Skripts und erstellen Sie einen neuen Skripteintrag. Vergeben Sie einen aussagekräftigen Namen und eine Beschreibung.',
+          'Öffnen Sie das Intune Admin Center und navigieren Sie zum Bereich Plattformskripte.',
       },
       {
         title: 'Skriptdatei hochladen',
         description:
-          'Laden Sie die vorbereitete .ps1-Datei hoch und konfigurieren Sie die Skripteinstellungen.',
+          'Geben Sie einen beschreibenden Namen und eine optionale Beschreibung ein. Laden Sie die .ps1-Datei hoch.',
       },
       {
-        title: 'Ausführungskontext konfigurieren',
+        title: 'Skriptausführungseinstellungen konfigurieren',
         description:
-          'Legen Sie fest, ob das Skript im Benutzerkontext oder im SYSTEM-Kontext ausgeführt werden soll. Konfigurieren Sie, ob die Signaturprüfung erzwungen werden soll.',
-        note: 'Wählen Sie den SYSTEM-Kontext, wenn das Skript Administratorrechte benötigt.',
+          'Legen Sie den Ausführungskontext auf System (als SYSTEM-Konto) oder Benutzer (als angemeldeter Benutzer) fest.',
+        note: 'Skripte im Systemkontext haben volle Administratorrechte. Skripte im Benutzerkontext werden mit den Berechtigungen des angemeldeten Benutzers ausgeführt.',
       },
       {
-        title: 'Wiederholungsverhalten festlegen',
+        title: 'Signatur- und 64-Bit-Einstellungen konfigurieren',
         description:
-          'Konfigurieren Sie, ob das Skript bei einem Fehler wiederholt werden soll und in welchen Intervallen die Wiederholung stattfindet. Standardmäßig werden Skripte einmal ausgeführt.',
+          'Wählen Sie, ob die Skriptsignaturprüfung erzwungen werden soll. Wählen Sie "Skript im 64-Bit PowerShell-Host ausführen", wenn Ihr Skript 64-Bit-spezifische Module verwendet.',
+        warning: 'Der 32-Bit PowerShell-Host leitet HKLM\\SOFTWARE nach HKLM\\SOFTWARE\\WOW6432Node um. Verwenden Sie immer den 64-Bit-Host, es sei denn, Sie benötigen ausdrücklich 32-Bit-Kompatibilität.',
       },
       {
-        title: 'Zuweisung konfigurieren',
+        title: 'Skript Gruppen zuweisen',
         description:
-          'Weisen Sie das Skript den gewünschten Benutzer- oder Gerätegruppen zu. Beachten Sie, dass Skripte standardmäßig einmal pro Gerät ausgeführt werden.',
+          'Weisen Sie das Skript den Azure AD-Zielgruppen zu. Skripte werden standardmäßig einmal pro Gerät ausgeführt.',
       },
       {
-        title: 'Ausführungsstatus überwachen',
+        title: 'Wiederholungs- und Neuausführungsverhalten verstehen',
         description:
-          'Überwachen Sie den Ausführungsstatus im Intune-Portal. Prüfen Sie die Exit-Codes und die Ausgabeprotokolle, um erfolgreiche und fehlgeschlagene Ausführungen zu identifizieren.',
-        note: 'Detaillierte Protokolle finden Sie auf dem Gerät unter C:\\ProgramData\\Microsoft\\IntuneManagementExtension\\Logs.',
+          'Intune versucht, das Skript einmal auszuführen und wiederholt es bis zu dreimal bei Fehlschlag.',
+        note: 'Um eine Neuausführung auf einem bestimmten Gerät zu erzwingen, können Sie die Skriptausführungseinträge aus der Intune Management Extension-Registrierung auf diesem Gerät löschen.',
+      },
+      {
+        title: 'Skriptausführungsstatus überwachen',
+        description:
+          'Überprüfen Sie den Bereitstellungsstatus im Intune-Portal. Die Übersichtsseite zeigt, wie viele Geräte das Skript erfolgreich ausgeführt haben.',
       },
     ],
   },
@@ -517,65 +513,62 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-bitlocker': {
     title: 'BitLocker über Intune aktivieren',
     description:
-      'Erfahren Sie, wie Sie die BitLocker-Laufwerkverschlüsselung über ein Intune-Endpunktschutzprofil konfigurieren und bereitstellen, einschließlich der Wiederherstellungsoptionen.',
+      'Konfigurieren und Bereitstellen der BitLocker-Laufwerkverschlüsselung über Intune-Endpunktschutzprofile, einschließlich OS-Laufwerkverschlüsselung, Wiederherstellungsoptionen und Azure AD-Schlüsselsicherung.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
-      'Windows 10/11 Pro, Enterprise oder Education',
-      'TPM 1.2 oder höher (TPM 2.0 empfohlen)',
       'Intune-Administratorrolle',
-      'UEFI-Firmware mit Secure Boot (empfohlen)',
+      'Geräte mit TPM 1.2 oder höher (TPM 2.0 empfohlen)',
+      'Geräte mit Windows 10 Pro, Enterprise oder Education',
+      'Azure AD Premium für die Wiederherstellungsschlüssel-Sicherung',
     ],
     steps: [
       {
-        title: 'Endpunktschutzprofil erstellen',
+        title: 'Geräte-Hardware-Bereitschaft prüfen',
         description:
-          'Navigieren Sie im Intune-Portal zu den Endpunktsicherheitsrichtlinien und erstellen Sie ein neues Datenträgerverschlüsselungsprofil für BitLocker.',
+          'Stellen Sie sicher, dass Zielgeräte einen kompatiblen TPM-Chip haben und die Firmware-Anforderungen für BitLocker erfüllen.',
       },
       {
-        title: 'BitLocker-Basiseinstellungen konfigurieren',
+        title: 'Endpunktschutzprofil erstellen',
         description:
-          'Aktivieren Sie die Verschlüsselung und konfigurieren Sie die grundlegenden BitLocker-Einstellungen. Legen Sie fest, ob Benutzer zur Verschlüsselung aufgefordert werden oder ob diese automatisch erfolgt.',
-        warning:
-          'Die automatische Verschlüsselung erfordert, dass das Gerät die Modern Standby- oder HSTI-Anforderungen erfüllt.',
+          'Erstellen Sie im Intune Admin Center ein neues Endpunktschutz-Konfigurationsprofil. Die BitLocker-Einstellungen befinden sich in der Endpunktschutzvorlage.',
+      },
+      {
+        title: 'Windows-Verschlüsselungs-Basiseinstellungen konfigurieren',
+        description:
+          'Setzen Sie im Bereich Windows-Verschlüsselung "Geräte verschlüsseln" auf "Erforderlich". Wählen Sie als Verschlüsselungsmethode XTS-AES 256-Bit.',
+        warning: 'Wenn auf Geräten bereits eine Drittanbieter-Verschlüsselungslösung installiert ist (z. B. Symantec Endpoint Encryption), muss diese vor der Aktivierung von BitLocker entfernt werden. Konkurrierende Verschlüsselungsprodukte können Startfehler verursachen.',
       },
       {
         title: 'Betriebssystem-Laufwerkverschlüsselung konfigurieren',
         description:
-          'Konfigurieren Sie die Verschlüsselungseinstellungen für das Betriebssystem-Laufwerk: Verschlüsselungsmethode (AES-XTS 256-Bit empfohlen), Startauthentifizierung und TPM-Konfiguration.',
+          'Konfigurieren Sie die Einstellungen für das Betriebssystem-Laufwerk. Legen Sie die Startauthentifizierungsmethode fest: nur TPM (nahtloseste Option) oder TPM + PIN (sicherer).',
+        note: 'Nur-TPM-Authentifizierung bietet transparente Verschlüsselung. TPM + PIN fügt eine Pre-Boot-Authentifizierung für Hochsicherheitsumgebungen hinzu, erfordert aber bei jedem Start eine Benutzerinteraktion.',
       },
       {
-        title: 'Wiederherstellungsoptionen für das Betriebssystem-Laufwerk festlegen',
+        title: 'Wiederherstellungsoptionen konfigurieren',
         description:
-          'Definieren Sie die Wiederherstellungsoptionen: Wiederherstellungsschlüssel und Wiederherstellungskennwort. Konfigurieren Sie die Speicherung des Wiederherstellungsschlüssels in Azure AD.',
-        note: 'Empfehlung: Aktivieren Sie die Speicherung des Wiederherstellungsschlüssels in Azure AD, bevor BitLocker aktiviert wird.',
+          'Aktivieren Sie die Sicherung des Wiederherstellungsschlüssels in Azure AD, damit Administratoren Schlüssel abrufen können, wenn Benutzer gesperrt sind.',
+        warning: 'Wenn die Azure AD-Wiederherstellungsschlüssel-Sicherung fehlschlägt und keine andere Wiederherstellungsmethode konfiguriert ist, kann es zu Datenverlust kommen. Überprüfen Sie immer, ob Wiederherstellungsschlüssel erfolgreich hinterlegt werden.',
       },
       {
-        title: 'Festplattenlaufwerke konfigurieren',
+        title: 'Festplatten- und Wechseldatenträger-Einstellungen konfigurieren',
         description:
-          'Konfigurieren Sie optional die Verschlüsselungseinstellungen für zusätzliche Festplattenlaufwerke. Legen Sie fest, ob diese automatisch oder manuell verschlüsselt werden.',
+          'Konfigurieren Sie optional die Verschlüsselung für feste Datenlaufwerke und Richtlinien für Wechseldatenträger (USB-Sticks).',
+        note: 'Das Erzwingen der Verschlüsselung für Wechseldatenträger kann die Produktivität beeinträchtigen. Erwägen Sie zunächst eine Nur-Warnung-Richtlinie und wechseln Sie nach Benutzerschulung zur Erzwingung.',
       },
       {
-        title: 'Wechseldatenträger konfigurieren',
+        title: 'Profil Gerätegruppen zuweisen',
         description:
-          'Konfigurieren Sie optional die BitLocker To Go-Einstellungen für Wechseldatenträger (USB-Sticks). Sie können den Schreibzugriff auf unverschlüsselte Wechseldatenträger blockieren.',
+          'Weisen Sie das Endpunktschutzprofil den Azure AD-Zielgerätegruppen zu. Beginnen Sie mit einer Pilotgruppe.',
       },
       {
-        title: 'Zuweisung konfigurieren',
+        title: 'Wiederherstellungsschlüssel-Sicherung in Azure AD überprüfen',
         description:
-          'Weisen Sie das BitLocker-Profil den gewünschten Gerätegruppen zu. Beginnen Sie mit einer Pilotgruppe, bevor Sie die Richtlinie organisationsweit bereitstellen.',
-        warning:
-          'Stellen Sie sicher, dass die Wiederherstellungsschlüssel-Hinterlegung in Azure AD funktioniert, bevor Sie die Verschlüsselung organisationsweit aktivieren.',
+          'Überprüfen Sie nach der Verschlüsselung, ob Wiederherstellungsschlüssel in Azure AD gespeichert werden.',
       },
       {
         title: 'Verschlüsselungsstatus überwachen',
         description:
-          'Überprüfen Sie den Verschlüsselungsstatus der Geräte im Intune-Portal unter den Verschlüsselungsberichten.',
-      },
-      {
-        title: 'Wiederherstellungsschlüssel verwalten',
-        description:
-          'Verwalten Sie die BitLocker-Wiederherstellungsschlüssel im Intune-Portal oder in Azure AD. Stellen Sie sicher, dass Helpdesk-Mitarbeiter Zugriff auf die Wiederherstellungsschlüssel haben.',
-        note: 'Benutzer können ihre eigenen Wiederherstellungsschlüssel auch über die Seite "Mein Konto" (myaccount.microsoft.com) einsehen.',
+          'Überwachen Sie den BitLocker-Verschlüsselungsstatus über den Intune-Verschlüsselungsbericht.',
       },
     ],
   },
@@ -584,48 +577,46 @@ const intuneGuidesDe: Record<string, GuideTranslation> = {
   'intune-remote-actions': {
     title: 'Geräte remote zurücksetzen',
     description:
-      'Erfahren Sie, wie Sie Intune-Remoteaktionen verwenden, um Geräte zurückzusetzen, außer Betrieb zu nehmen oder neu zu starten, und wann welche Aktion die richtige Wahl ist.',
+      'Ausführen von Remoteaktionen auf verwalteten Geräten, einschließlich vollständigem Zurücksetzen, selektiver Außerbetriebnahme und Neustart, mit klarer Anleitung zur Verwendung jeder Option.',
     prerequisites: [
-      'Microsoft Intune-Abonnement',
-      'Intune-Administratorrolle (mindestens Helpdeskoperator für eingeschränkte Aktionen)',
-      'Gerät muss in Intune registriert und erreichbar sein',
+      'Intune-Administratorrolle oder entsprechende RBAC-Berechtigungen für Remoteaktionen',
+      'Gerät in Intune registriert und erreichbar',
     ],
     steps: [
       {
-        title: 'Unterschiede der Remoteaktionen verstehen',
+        title: 'Unterschied zwischen Zurücksetzen, Außerbetriebnahme und Neustart verstehen',
         description:
-          'Machen Sie sich mit den verschiedenen Remoteaktionen vertraut: "Zurücksetzen" setzt das Gerät auf Werkseinstellungen zurück, "Außerbetriebnahme" entfernt nur Unternehmensdaten, und "Neustart" startet das Gerät remote neu.',
-        warning:
-          '"Zurücksetzen" löscht alle Daten auf dem Gerät unwiderruflich. Verwenden Sie "Außerbetriebnahme" für BYOD-Geräte, um persönliche Daten zu erhalten.',
+          '"Zurücksetzen" führt einen vollständigen Werksreset durch. "Außerbetriebnahme" entfernt nur Unternehmensdaten. "Neustart" installiert Windows neu und entfernt vorinstallierte OEM-Apps.',
+        note: 'Wählen Sie "Außerbetriebnahme" für BYOD und persönliche Geräte. Wählen Sie "Zurücksetzen" für unternehmenseigene Geräte, die neu verwendet werden. Wählen Sie "Neustart" zum Bereinigen von Bloatware.',
       },
       {
-        title: 'Gerät im Portal suchen',
+        title: 'Gerät in Intune suchen',
         description:
-          'Suchen Sie das betroffene Gerät im Intune-Portal über den Gerätenamen, die Seriennummer oder den Benutzernamen.',
+          'Navigieren Sie zur Geräteliste im Intune Admin Center. Suchen Sie nach dem Zielgerät anhand von Name, Seriennummer oder Benutzername.',
+        warning: 'Überprüfen Sie immer den Gerätenamen, die Seriennummer und den registrierten Benutzer, bevor Sie eine Remoteaktion ausführen. Das Zurücksetzen des falschen Geräts ist nicht rückgängig zu machen.',
       },
       {
-        title: 'Remoteaktion auswählen und ausführen',
+        title: 'Zurücksetzen ausführen (vollständiger Werksreset)',
         description:
-          'Wählen Sie die gewünschte Remoteaktion aus dem Aktionsmenü des Geräts. Bestätigen Sie die Aktion, wenn Sie dazu aufgefordert werden.',
-        warning:
-          'Überprüfen Sie vor dem Zurücksetzen eines Geräts, ob der Benutzer alle wichtigen Daten gesichert hat.',
+          'Klicken Sie in der Geräte-Symbolleiste auf die Aktion "Zurücksetzen". Sie werden zur Bestätigung aufgefordert.',
+        warning: 'Ein vollständiges Zurücksetzen löscht ALLE Daten auf dem Gerät dauerhaft, einschließlich persönlicher Dateien, Apps und Einstellungen. Diese Aktion kann nicht rückgängig gemacht werden.',
       },
       {
-        title: 'Zurücksetzen mit Optionen konfigurieren',
+        title: 'Außerbetriebnahme ausführen (selektives Zurücksetzen)',
         description:
-          'Beim Zurücksetzen können Sie zusätzliche Optionen angeben: Registrierungsstatus und Benutzerkonto beibehalten, oder das Gerät auch dann zurücksetzen, wenn es keinen Strom hat (wird nach dem nächsten Start ausgeführt).',
-        note: 'Die Option "Registrierungsstatus beibehalten" ist hilfreich, wenn das Gerät nach dem Zurücksetzen automatisch wieder über Autopilot bereitgestellt werden soll.',
+          'Klicken Sie auf "Außerbetriebnahme", um nur Unternehmensdaten und Verwaltungsprofile zu entfernen. Persönliche Daten bleiben erhalten.',
+        note: 'Nach einer Außerbetriebnahme wird das Gerät aus der Intune-Verwaltung entfernt. Der Benutzer kann sich bei Bedarf erneut registrieren. Über Intune als "Erforderlich" bereitgestellte Unternehmens-Apps werden entfernt.',
+      },
+      {
+        title: 'Neustart ausführen (nur Windows)',
+        description:
+          'Klicken Sie auf "Neustart", um Windows neu zu installieren und vorinstallierte Hersteller-Apps zu entfernen. Das Gerät bleibt in Intune und Azure AD registriert.',
+        note: 'Neustart erfordert Windows 10 Version 1709 oder höher. Das Gerät lädt während des Vorgangs die neueste Windows-Version herunter, was eine aktive Internetverbindung erfordert.',
       },
       {
         title: 'Aktionsstatus überprüfen',
         description:
-          'Überwachen Sie den Status der Remoteaktion im Intune-Portal. Der Status zeigt an, ob die Aktion ausstehend, aktiv oder abgeschlossen ist.',
-      },
-      {
-        title: 'Abschluss bestätigen und Gerät nachverfolgen',
-        description:
-          'Bestätigen Sie, dass die Aktion erfolgreich abgeschlossen wurde. Prüfen Sie den Gerätestatus und stellen Sie sicher, dass das Gerät ggf. wieder ordnungsgemäß registriert und konfiguriert wird.',
-        note: 'Gelöschte Geräte können unter "Alle Geräte" mit dem Filter "Ausstehend" oder "Zurückgesetzt" nachverfolgt werden.',
+          'Überwachen Sie nach dem Initiieren einer Remoteaktion deren Status im Bereich "Geräteaktionen" auf der Gerätedetailseite.',
       },
     ],
   },
