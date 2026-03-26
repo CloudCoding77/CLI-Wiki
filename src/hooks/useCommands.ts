@@ -74,12 +74,12 @@ export function useCommands() {
     })
   }, [commands, search, selectedOS, selectedCategory])
 
-  // Reset selected category when it becomes unavailable
+  // Reset selected category when it becomes unavailable (only in commands view)
   useEffect(() => {
-    if (selectedCategory && !availableCategories.includes(selectedCategory)) {
+    if (view === 'commands' && selectedCategory && !availableCategories.includes(selectedCategory)) {
       setSelectedCategory(null)
     }
-  }, [selectedCategory, availableCategories, setSelectedCategory])
+  }, [view, selectedCategory, availableCategories, setSelectedCategory])
 
   return {
     search,
