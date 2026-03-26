@@ -45,6 +45,12 @@ const ui = {
     'guide.back': 'Back',
     'empty.guides.title': 'No guides found.',
     'empty.guides.subtitle': 'Try adjusting your filters or search term.',
+    'guide.progress': 'Progress',
+    'guide.progressReset': 'Reset progress',
+    'guide.progressComplete': 'Completed!',
+    'guide.progressOf': 'of',
+    'search.suggestions': 'Suggestions',
+    'search.noResults': 'No results found.',
   },
   de: {
     'header.commands': 'Befehle',
@@ -90,6 +96,12 @@ const ui = {
     'guide.back': 'Zurück',
     'empty.guides.title': 'Keine Anleitungen gefunden.',
     'empty.guides.subtitle': 'Passe die Filter oder den Suchbegriff an.',
+    'guide.progress': 'Fortschritt',
+    'guide.progressReset': 'Fortschritt zurücksetzen',
+    'guide.progressComplete': 'Abgeschlossen!',
+    'guide.progressOf': 'von',
+    'search.suggestions': 'Vorschläge',
+    'search.noResults': 'Keine Ergebnisse gefunden.',
   },
 } as const satisfies Record<Lang, Record<string, string>>
 

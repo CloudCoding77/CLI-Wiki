@@ -28,5 +28,59 @@
     "name": "Management & Ops",
     "icon": "🖥️",
     "description": "Day-to-day device management, scripting, reporting"
+  },
+  {
+    "id": "entra-identity",
+    "name": "Identity & Access",
+    "icon": "🔐",
+    "description": "User management, groups, roles, and access governance"
+  },
+  {
+    "id": "entra-apps",
+    "name": "App Registrations",
+    "icon": "📱",
+    "description": "Application registrations, SSO, and enterprise apps"
+  },
+  {
+    "id": "entra-security",
+    "name": "Entra Security",
+    "icon": "🛡️",
+    "description": "Conditional Access, MFA, PIM, and access reviews"
+  },
+  {
+    "id": "m365-exchange",
+    "name": "Exchange Online",
+    "icon": "📧",
+    "description": "Mail flow, mailboxes, retention, and DLP policies"
+  },
+  {
+    "id": "m365-teams",
+    "name": "Teams & Communication",
+    "icon": "💬",
+    "description": "Teams policies, rooms, phone system, and meetings"
+  },
+  {
+    "id": "m365-sharepoint",
+    "name": "SharePoint & OneDrive",
+    "icon": "📂",
+    "description": "Sites, document management, and sync policies"
+  },
+  {
+    "id": "ws-activedirectory",
+    "name": "Active Directory",
+    "icon": "🏢",
+    "description": "AD DS, Group Policy, user management, and forests"
+  },
+  {
+    "id": "ws-infrastructure",
+    "name": "Network & Infrastructure",
+    "icon": "🌐",
+    "description": "DNS, DHCP, WSUS, file servers, and DFS"
+  },
+  {
+    "id": "ws-security",
+    "name": "Server Security",
+    "icon": "🔒",
+    "description": "Certificates, RDP Gateway, backup, and hardening"
   }
 ]

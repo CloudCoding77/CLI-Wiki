@@ -1,5 +1,6 @@
 import type { Guide } from '../types'
 import { useLanguage } from '../i18n/LanguageContext'
+import { useGuideProgress } from '../hooks/useGuideProgress'
 import DifficultyBadge from './DifficultyBadge'
 import GuideStepComponent from './GuideStep'
 
@@ -12,6 +13,10 @@ interface Props {
 
 export default function GuideDetail({ guide, onClose, onNavigateGuide, onNavigateCommand }: Props) {
   const { t } = useLanguage()
+  const { toggle, isCompleted, percentage, isDone, completedCount, reset } = useGuideProgress(
+    guide.id,
+    guide.steps.length
+  )
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950 overflow-y-auto">
@@ -27,7 +32,18 @@ export default function GuideDetail({ guide, onClose, onNavigateGuide, onNavigat
             </svg>
             {t('guide.back')}
           </button>
-          <h1 className="text-lg font-bold text-slate-100 truncate">{guide.title}</h1>
+          <h1 className="text-lg font-bold text-slate-100 truncate flex-1">{guide.title}</h1>
+          {/* Progress indicator in header */}
+          <span className={`text-xs font-medium shrink-0 ${isDone ? 'text-emerald-400' : 'text-slate-500'}`}>
+            {isDone ? `✓ ${t('guide.progressComplete')}` : `${completedCount}/${guide.steps.length}`}
+          </span>
+        </div>
+        {/* Progress bar */}
+        <div className="h-0.5 bg-slate-800">
+          <div
+            className={`h-full transition-all duration-300 ${isDone ? 'bg-emerald-400' : 'bg-emerald-500/60'}`}
+            style={{ width: `${percentage}%` }}
+          />
         </div>
       </div>
 
@@ -44,6 +60,14 @@ export default function GuideDetail({ guide, onClose, onNavigateGuide, onNavigat
             <span className="text-sm text-slate-500">
               {guide.steps.length} {t('guide.steps')}
             </span>
+            {completedCount > 0 && (
+              <button
+                onClick={reset}
+                className="text-xs text-slate-500 hover:text-slate-300 transition-colors underline underline-offset-2"
+              >
+                {t('guide.progressReset')}
+              </button>
+            )}
           </div>
         </div>
 
@@ -71,7 +95,13 @@ export default function GuideDetail({ guide, onClose, onNavigateGuide, onNavigat
           </h3>
           <div className="border-l-2 border-slate-700 ml-4 pl-0">
             {guide.steps.map((step, i) => (
-              <GuideStepComponent key={i} step={step} index={i} />
+              <GuideStepComponent
+                key={i}
+                step={step}
+                index={i}
+                completed={isCompleted(i)}
+                onToggle={() => toggle(i)}
+              />
             ))}
           </div>
         </div>

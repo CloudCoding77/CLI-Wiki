@@ -5,20 +5,32 @@ import CopyButton from './CopyButton'
 interface Props {
   step: GuideStepType
   index: number
+  completed?: boolean
+  onToggle?: () => void
 }
 
-export default function GuideStep({ step, index }: Props) {
+export default function GuideStep({ step, index, completed, onToggle }: Props) {
   const { t } = useLanguage()
 
   return (
     <div className="flex gap-4">
-      {/* Step number */}
-      <div className="shrink-0 w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
-        {index + 1}
-      </div>
+      {/* Step number / checkbox */}
+      <button
+        onClick={onToggle}
+        className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
+          completed
+            ? 'bg-emerald-500/30 text-emerald-300 ring-2 ring-emerald-500/40'
+            : 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
+        }`}
+        title={completed ? 'Mark as incomplete' : 'Mark as complete'}
+      >
+        {completed ? '✓' : index + 1}
+      </button>
 
-      <div className="flex-1 min-w-0 pb-6">
-        <h4 className="font-semibold text-slate-100 mb-1">{step.title}</h4>
+      <div className={`flex-1 min-w-0 pb-6 transition-opacity ${completed ? 'opacity-60' : ''}`}>
+        <h4 className={`font-semibold mb-1 ${completed ? 'text-slate-400 line-through' : 'text-slate-100'}`}>
+          {step.title}
+        </h4>
         <p className="text-sm text-slate-300 leading-relaxed mb-3">{step.description}</p>
 
         {/* Portal Path */}

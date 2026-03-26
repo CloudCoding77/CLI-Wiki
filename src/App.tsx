@@ -38,6 +38,7 @@ export default function App() {
   } = useCommands()
 
   const {
+    guides: allGuides,
     filtered: filteredGuides,
     availableGuideCategories,
     selectedGuideById,
@@ -103,6 +104,13 @@ export default function App() {
               onChange={setSearch}
               placeholder={searchPlaceholder}
               ariaLabel={searchAriaLabel}
+              commands={commands}
+              guides={allGuides}
+              onSelectCommand={setSelectedCommand}
+              onSelectGuide={(id) => {
+                setView('guides')
+                setSelectedGuideId(id)
+              }}
             />
             {isCommandsView && (
               <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
