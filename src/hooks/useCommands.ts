@@ -34,6 +34,10 @@ export function useCommands() {
     setSelectedCategory,
     selectedCommandId,
     setSelectedCommandId,
+    selectedGuideId,
+    setSelectedGuideId,
+    view,
+    setView,
     lang,
     setLang,
   } = useHashRouter()
@@ -86,6 +90,10 @@ export function useCommands() {
     setSelectedCommand,
     filtered,
     availableCategories,
+    selectedGuideId,
+    setSelectedGuideId,
+    view,
+    setView,
     lang,
     setLang,
   }

@@ -2,8 +2,12 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import type { OS } from '../types'
 import type { Lang } from '../i18n/ui'
 
+export type View = 'commands' | 'guides'
+
 interface HashState {
   commandId: string | null
+  guideId: string | null
+  view: View
   os: OS | 'all'
   cat: string | null
   q: string
@@ -12,6 +16,7 @@ interface HashState {
 
 const VALID_OS: ReadonlySet<string> = new Set(['linux', 'macos', 'windows', 'all'])
 const VALID_LANG: ReadonlySet<string> = new Set(['en', 'de'])
+const VALID_VIEW: ReadonlySet<string> = new Set(['commands', 'guides'])
 
 function getInitialLang(): Lang {
   const stored = localStorage.getItem('lang')
@@ -20,20 +25,24 @@ function getInitialLang(): Lang {
 }
 
 function parseHash(hash: string): HashState {
-  // Remove leading "#" if present
   const raw = hash.startsWith('#') ? hash.slice(1) : hash
-
-  // Split on "?" to separate path and query
   const [path = '/', queryString = ''] = raw.split('?', 2)
 
-  // Parse path: "/" or "/command/{id}"
   let commandId: string | null = null
+  let guideId: string | null = null
+  let view: View = 'commands'
+
   const commandMatch = path.match(/^\/command\/(.+)$/)
   if (commandMatch) {
     commandId = decodeURIComponent(commandMatch[1])
   }
 
-  // Parse query params
+  const guideMatch = path.match(/^\/guide\/(.+)$/)
+  if (guideMatch) {
+    guideId = decodeURIComponent(guideMatch[1])
+    view = 'guides'
+  }
+
   const params = new URLSearchParams(queryString)
 
   const osParam = params.get('os') ?? 'all'
@@ -45,13 +54,20 @@ function parseHash(hash: string): HashState {
   const langParam = params.get('lang') ?? ''
   const lang: Lang = VALID_LANG.has(langParam) ? (langParam as Lang) : getInitialLang()
 
-  return { commandId, os, cat, q, lang }
+  const viewParam = params.get('view') ?? ''
+  if (!guideId && VALID_VIEW.has(viewParam)) {
+    view = viewParam as View
+  }
+
+  return { commandId, guideId, view, os, cat, q, lang }
 }
 
 function buildHash(state: HashState): string {
   let path = '/'
   if (state.commandId) {
     path = `/command/${encodeURIComponent(state.commandId)}`
+  } else if (state.guideId) {
+    path = `/guide/${encodeURIComponent(state.guideId)}`
   }
 
   const params = new URLSearchParams()
@@ -59,6 +75,7 @@ function buildHash(state: HashState): string {
   if (state.cat) params.set('cat', state.cat)
   if (state.q) params.set('q', state.q)
   if (state.lang && state.lang !== 'en') params.set('lang', state.lang)
+  if (state.view === 'guides' && !state.guideId) params.set('view', 'guides')
 
   const qs = params.toString()
   return qs ? `${path}?${qs}` : path
@@ -71,13 +88,22 @@ export function useHashRouter() {
   const [selectedOS, setSelectedOSState] = useState<OS | 'all'>(initial.os)
   const [selectedCategory, setSelectedCategoryState] = useState<string | null>(initial.cat)
   const [selectedCommandId, setSelectedCommandIdState] = useState<string | null>(initial.commandId)
+  const [selectedGuideId, setSelectedGuideIdState] = useState<string | null>(initial.guideId)
+  const [view, setViewState] = useState<View>(initial.view)
   const [lang, setLangState] = useState<Lang>(initial.lang)
 
   const isFromHashChange = useRef(false)
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Keep a ref of current state for building hash without stale closures
-  const stateRef = useRef<HashState>({ commandId: initial.commandId, os: initial.os, cat: initial.cat, q: initial.q, lang: initial.lang })
+  const stateRef = useRef<HashState>({
+    commandId: initial.commandId,
+    guideId: initial.guideId,
+    view: initial.view,
+    os: initial.os,
+    cat: initial.cat,
+    q: initial.q,
+    lang: initial.lang,
+  })
 
   const updateHash = useCallback((newState: Partial<HashState>, push: boolean) => {
     stateRef.current = { ...stateRef.current, ...newState }
@@ -89,7 +115,6 @@ export function useHashRouter() {
     }
   }, [])
 
-  // Command open/close → pushState (for back button)
   const setSelectedCommandId = useCallback((id: string | null) => {
     setSelectedCommandIdState(id)
     if (!isFromHashChange.current) {
@@ -97,7 +122,22 @@ export function useHashRouter() {
     }
   }, [updateHash])
 
-  // Filter changes → replaceState
+  const setSelectedGuideId = useCallback((id: string | null) => {
+    setSelectedGuideIdState(id)
+    if (!isFromHashChange.current) {
+      updateHash({ guideId: id }, true)
+    }
+  }, [updateHash])
+
+  const setView = useCallback((v: View) => {
+    setViewState(v)
+    setSelectedCategoryState(null)
+    setSearchState('')
+    if (!isFromHashChange.current) {
+      updateHash({ view: v, cat: null, q: '' }, false)
+    }
+  }, [updateHash])
+
   const setSelectedOS = useCallback((os: OS | 'all') => {
     setSelectedOSState(os)
     if (!isFromHashChange.current) {
@@ -112,7 +152,6 @@ export function useHashRouter() {
     }
   }, [updateHash])
 
-  // Language → replaceState + localStorage
   const setLang = useCallback((l: Lang) => {
     setLangState(l)
     localStorage.setItem('lang', l)
@@ -121,7 +160,6 @@ export function useHashRouter() {
     }
   }, [updateHash])
 
-  // Search → replaceState with debounce
   const setSearch = useCallback((q: string) => {
     setSearchState(q)
     if (!isFromHashChange.current) {
@@ -132,7 +170,6 @@ export function useHashRouter() {
     }
   }, [updateHash])
 
-  // Listen for back/forward
   useEffect(() => {
     const onPopState = () => {
       const parsed = parseHash(window.location.hash)
@@ -141,9 +178,10 @@ export function useHashRouter() {
       setSelectedOSState(parsed.os)
       setSelectedCategoryState(parsed.cat)
       setSelectedCommandIdState(parsed.commandId)
+      setSelectedGuideIdState(parsed.guideId)
+      setViewState(parsed.view)
       setLangState(parsed.lang)
       stateRef.current = parsed
-      // Reset flag after React processes the state updates
       setTimeout(() => { isFromHashChange.current = false }, 0)
     }
 
@@ -151,7 +189,6 @@ export function useHashRouter() {
     return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
-  // Cleanup debounce on unmount
   useEffect(() => {
     return () => {
       if (debounceTimer.current) clearTimeout(debounceTimer.current)
@@ -167,6 +204,10 @@ export function useHashRouter() {
     setSelectedCategory,
     selectedCommandId,
     setSelectedCommandId,
+    selectedGuideId,
+    setSelectedGuideId,
+    view,
+    setView,
     lang,
     setLang,
   }

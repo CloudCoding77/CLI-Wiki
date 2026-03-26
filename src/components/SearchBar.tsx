@@ -4,9 +4,11 @@ import { useLanguage } from '../i18n/LanguageContext'
 interface Props {
   value: string
   onChange: (v: string) => void
+  placeholder?: string
+  ariaLabel?: string
 }
 
-export default function SearchBar({ value, onChange }: Props) {
+export default function SearchBar({ value, onChange, placeholder, ariaLabel }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const { t } = useLanguage()
 
@@ -47,8 +49,8 @@ export default function SearchBar({ value, onChange }: Props) {
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder={t('search.placeholder')}
-        aria-label={t('search.ariaLabel')}
+        placeholder={placeholder ?? t('search.placeholder')}
+        aria-label={ariaLabel ?? t('search.ariaLabel')}
         className="w-full pl-10 pr-20 py-3 bg-slate-800 border border-slate-700 rounded-xl
                    text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2
                    focus:ring-emerald-500 focus:border-transparent transition-all"

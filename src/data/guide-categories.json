@@ -1,0 +1,32 @@
+[
+  {
+    "id": "intune-deployment",
+    "name": "App Deployment",
+    "icon": "📲",
+    "description": "Deploy and manage applications via Intune"
+  },
+  {
+    "id": "intune-config",
+    "name": "Configuration",
+    "icon": "🔧",
+    "description": "Device configuration profiles and policies"
+  },
+  {
+    "id": "intune-compliance",
+    "name": "Compliance & Security",
+    "icon": "🛡️",
+    "description": "Compliance policies, Conditional Access, BitLocker"
+  },
+  {
+    "id": "intune-enrollment",
+    "name": "Enrollment",
+    "icon": "📋",
+    "description": "Device enrollment and Autopilot"
+  },
+  {
+    "id": "intune-management",
+    "name": "Management & Ops",
+    "icon": "🖥️",
+    "description": "Day-to-day device management, scripting, reporting"
+  }
+]
