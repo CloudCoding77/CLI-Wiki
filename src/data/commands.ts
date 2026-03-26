@@ -5002,4 +5002,45 @@ export const commands: Command[] = [
     tips: 'Run "Shell Command: Install code in PATH" from VS Code command palette on macOS.',
     relatedCommands: ['nvim', 'vim', 'nano'],
   },
+
+  // ── Windows-specific tools ─────────────────────────────────
+  {
+    id: 'winget',
+    name: 'winget',
+    category: 'package-management',
+    os: ['windows'],
+    syntax: {
+      windows: 'winget [command] [options]',
+    },
+    description: 'Windows Package Manager CLI for discovering, installing, upgrading, and removing applications.',
+    examples: [
+      { description: 'Search for a package', code: 'winget search "Visual Studio Code"' },
+      { description: 'Install a package', code: 'winget install Microsoft.VisualStudioCode' },
+      { description: 'Upgrade all packages', code: 'winget upgrade --all' },
+      { description: 'List installed packages', code: 'winget list' },
+      { description: 'Show package details', code: 'winget show Microsoft.PowerShell' },
+      { description: 'Export installed packages', code: 'winget export -o packages.json' },
+    ],
+    tips: 'Use winget source update to refresh the package repository cache before searching.',
+    relatedCommands: ['choco', 'apt', 'brew'],
+  },
+  {
+    id: 'msiexec',
+    name: 'msiexec',
+    category: 'package-management',
+    os: ['windows'],
+    syntax: {
+      windows: 'msiexec /i <package.msi> [options]',
+    },
+    description: 'Windows Installer tool for installing, modifying, and uninstalling MSI packages.',
+    examples: [
+      { description: 'Install an MSI package', code: 'msiexec /i setup.msi' },
+      { description: 'Silent install with logging', code: 'msiexec /i setup.msi /qn /l*v install.log' },
+      { description: 'Uninstall a product', code: 'msiexec /x {PRODUCT-GUID}' },
+      { description: 'Repair an installation', code: 'msiexec /fa setup.msi' },
+      { description: 'Administrative install (extract)', code: 'msiexec /a setup.msi TARGETDIR="C:\\Extract"' },
+    ],
+    tips: 'Use /qn for fully silent installs (no UI) and /qb for basic UI — essential for automated deployments and Intune LOB apps.',
+    relatedCommands: ['winget', 'choco'],
+  },
 ]

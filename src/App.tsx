@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import SearchBar from './components/SearchBar'
 import OSFilter from './components/OSFilter'
 import CategoryBar from './components/CategoryBar'
@@ -24,6 +25,8 @@ export default function App() {
     setSelectedCategory,
     selectedCommand,
     setSelectedCommand,
+    setSelectedCommandId,
+    commands,
     filtered,
     availableCategories,
     selectedGuideId,
@@ -45,6 +48,11 @@ export default function App() {
   const guideCategories = getLocalizedGuideCategories(lang)
 
   const selectedGuide = selectedGuideById(selectedGuideId)
+
+  // Keep <html lang> in sync with selected language
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
 
   // Group filtered commands by category
   const grouped = categories
@@ -198,6 +206,7 @@ export default function App() {
             onClose={() => setSelectedCommand(null)}
             onNavigate={setSelectedCommand}
             selectedOS={selectedOS === 'all' ? null : selectedOS}
+            commands={commands}
           />
         )}
 
@@ -209,8 +218,8 @@ export default function App() {
             onNavigateGuide={(id) => setSelectedGuideId(id)}
             onNavigateCommand={(id) => {
               setSelectedGuideId(null)
-              window.location.hash = `#/command/${encodeURIComponent(id)}`
-              window.location.reload()
+              setView('commands')
+              setSelectedCommandId(id)
             }}
           />
         )}

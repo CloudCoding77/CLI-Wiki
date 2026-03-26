@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react'
+import { useMemo, useCallback, useEffect } from 'react'
 import { useHashRouter } from './useHashRouter'
 import { getLocalizedCommands } from '../i18n/localizedData'
 import type { Command } from '../types'
@@ -75,9 +75,11 @@ export function useCommands() {
   }, [commands, search, selectedOS, selectedCategory])
 
   // Reset selected category when it becomes unavailable
-  if (selectedCategory && !availableCategories.includes(selectedCategory)) {
-    setSelectedCategory(null)
-  }
+  useEffect(() => {
+    if (selectedCategory && !availableCategories.includes(selectedCategory)) {
+      setSelectedCategory(null)
+    }
+  }, [selectedCategory, availableCategories, setSelectedCategory])
 
   return {
     search,
@@ -88,6 +90,8 @@ export function useCommands() {
     setSelectedCategory,
     selectedCommand,
     setSelectedCommand,
+    setSelectedCommandId,
+    commands,
     filtered,
     availableCategories,
     selectedGuideId,

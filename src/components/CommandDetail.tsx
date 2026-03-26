@@ -1,6 +1,7 @@
+import { useEffect } from 'react'
 import type { Command, OS } from '../types'
-import { commands } from '../data/commands'
 import { useLanguage } from '../i18n/LanguageContext'
+import { osLabels, osBadgeColorsWithBorder as osBadgeColors } from '../utils/os'
 import CopyButton from './CopyButton'
 import FlagsExplorer from './FlagsExplorer'
 import ExplanationSection from './ExplanationSection'
@@ -10,22 +11,20 @@ interface Props {
   onClose: () => void
   onNavigate: (cmd: Command) => void
   selectedOS: OS | null
+  commands: Command[]
 }
 
-const osLabels: Record<OS, string> = {
-  linux: 'Linux',
-  macos: 'macOS',
-  windows: 'Windows',
-}
-
-const osBadgeColors: Record<string, string> = {
-  linux: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  macos: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  windows: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-}
-
-export default function CommandDetail({ command, onClose, onNavigate, selectedOS }: Props) {
+export default function CommandDetail({ command, onClose, onNavigate, selectedOS, commands }: Props) {
   const { t } = useLanguage()
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [onClose])
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">

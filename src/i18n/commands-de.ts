@@ -2208,6 +2208,31 @@ const commandsDe: Record<string, CommandTranslation> = {
     ],
     tips: 'Auf macOS "Shell Command: Install code in PATH" aus der VS Code Befehlspalette ausführen.',
   },
+
+  // ── Windows-spezifische Tools ──────────────────────────────
+  winget: {
+    description: 'Windows-Paketmanager zum Suchen, Installieren, Aktualisieren und Entfernen von Anwendungen.',
+    examples: [
+      'Nach einem Paket suchen',
+      'Ein Paket installieren',
+      'Alle Pakete aktualisieren',
+      'Installierte Pakete auflisten',
+      'Paketdetails anzeigen',
+      'Installierte Pakete exportieren',
+    ],
+    tips: 'Verwende winget source update, um den Paket-Cache zu aktualisieren, bevor du suchst.',
+  },
+  msiexec: {
+    description: 'Windows-Installer-Tool zum Installieren, Ändern und Deinstallieren von MSI-Paketen.',
+    examples: [
+      'Ein MSI-Paket installieren',
+      'Stille Installation mit Protokollierung',
+      'Ein Produkt deinstallieren',
+      'Eine Installation reparieren',
+      'Administrative Installation (Extrahieren)',
+    ],
+    tips: 'Verwende /qn für vollständig stille Installationen (ohne UI) und /qb für einfache UI — unverzichtbar für automatisierte Bereitstellungen und Intune LOB-Apps.',
+  },
 }
 
 export default commandsDe

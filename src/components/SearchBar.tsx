@@ -8,6 +8,8 @@ interface Props {
   ariaLabel?: string
 }
 
+const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
+
 export default function SearchBar({ value, onChange, placeholder, ariaLabel }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const { t } = useLanguage()
@@ -66,7 +68,7 @@ export default function SearchBar({ value, onChange, placeholder, ariaLabel }: P
           </button>
         )}
         <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] text-slate-500 bg-slate-700/50 border border-slate-600/50 rounded">
-          <span className="text-[11px]">&#8984;</span>K
+          {isMac ? <span className="text-[11px]">&#8984;</span> : <span className="text-[11px]">Ctrl+</span>}K
         </kbd>
       </div>
     </div>

@@ -1,19 +1,8 @@
 import { useState } from 'react'
 import type { CommandFlag, OS } from '../types'
 import { useLanguage } from '../i18n/LanguageContext'
+import { osLabels, osBadgeColorsWithBorder as osBadgeColors } from '../utils/os'
 import CopyButton from './CopyButton'
-
-const osBadgeColors: Record<string, string> = {
-  linux: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  macos: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  windows: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
-}
-
-const osLabels: Record<OS, string> = {
-  linux: 'Linux',
-  macos: 'macOS',
-  windows: 'Windows',
-}
 
 const INITIAL_VISIBLE = 5
 

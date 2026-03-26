@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useCallback, type ReactNode } from 'react'
 import type { Lang, UIKey } from './ui'
 import uiStrings from './ui'
 
@@ -19,7 +19,7 @@ export function LanguageProvider({
   setLang: (l: Lang) => void
   children: ReactNode
 }) {
-  const t = (key: UIKey) => uiStrings[lang][key]
+  const t = useCallback((key: UIKey) => uiStrings[lang][key], [lang])
   return (
     <LanguageContext.Provider value={{ lang, setLang, t }}>
       {children}

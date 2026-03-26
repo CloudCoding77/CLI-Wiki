@@ -6,9 +6,13 @@ export default function CopyButton({ text }: { text: string }) {
   const { t } = useLanguage()
 
   const copy = async () => {
-    await navigator.clipboard.writeText(text)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1500)
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      // Clipboard API may fail in insecure contexts — silent fallback
+    }
   }
 
   return (

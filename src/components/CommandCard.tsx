@@ -1,14 +1,9 @@
 import type { Command } from '../types'
+import { osLabels, osBadgeColors } from '../utils/os'
 
 interface Props {
   command: Command
   onClick: () => void
-}
-
-const osBadgeColors: Record<string, string> = {
-  linux: 'bg-amber-500/20 text-amber-400',
-  macos: 'bg-blue-500/20 text-blue-400',
-  windows: 'bg-cyan-500/20 text-cyan-400',
 }
 
 export default function CommandCard({ command, onClick }: Props) {
@@ -28,7 +23,7 @@ export default function CommandCard({ command, onClick }: Props) {
               key={os}
               className={`text-xs px-2 py-0.5 rounded-full font-medium ${osBadgeColors[os]}`}
             >
-              {os}
+              {osLabels[os]}
             </span>
           ))}
         </div>
